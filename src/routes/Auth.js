@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { auth } from '../firebase'
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -9,7 +9,6 @@ import {
 } from 'firebase/auth'
 
 const Auth = () => {
-  const auth = getAuth()
   const history = useHistory()
   const [inputs, setInputs] = useState({
     email: '',

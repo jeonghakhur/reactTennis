@@ -12,9 +12,7 @@ function App() {
     console.clear()
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserObj({
-          uid: user.uid,
-        })
+        setUserObj(user)
       } else {
         setUserObj(false)
       }
