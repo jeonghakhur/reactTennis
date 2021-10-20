@@ -12,7 +12,7 @@ const firebaseConfig = {
   measurementId: 'G-Q96NG311ST',
 }
 
-const firebase = initializeApp(firebaseConfig)
+const fb = initializeApp(firebaseConfig)
 const auth = getAuth()
-const database = getDatabase(firebase)
-export { firebase, auth, database }
+const db = getDatabase(fb)
+export { fb, auth, db }

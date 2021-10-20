@@ -3,7 +3,7 @@ import AppRouter from './AppRouter'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 function App() {
-  // console.clear()
+  console.clear()
   const [init, setInit] = useState(false)
   const [userObj, setUserObj] = useState(null)
   const auth = getAuth()
