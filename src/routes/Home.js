@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { db } from '../firebase'
 import { ref, push, set, onValue } from 'firebase/database'
+import Members from '../components/Members'
 
 const Home = ({ userObj }) => {
   const [inputs, setInputs] = useState({
@@ -115,9 +116,7 @@ const Home = ({ userObj }) => {
         <button type="button" onClick={handleUpdateClick}>update</button>
       </form>
       {members.map(member => (
-        <div key={member.id}>
-          {member.name}
-        </div>
+        <Members member={member} />
       ))}
     </>
   )
