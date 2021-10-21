@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { db } from '../firebase'
 import { ref, push, set, onValue } from 'firebase/database'
 import Members from '../components/Members'
@@ -6,14 +6,16 @@ import Members from '../components/Members'
 const Home = ({ userObj }) => {
   const [inputs, setInputs] = useState({
     name: '',
-    gender: '',
+    gender: 'M',
   })
+
+  const inputRef = useRef()
 
   const [members, setMembers] = useState([])
 
   const membersListRef = ref(db, 'reactTennis/members')
 
-  const getMemberList = () => {
+  useEffect(() => {
     onValue(membersListRef, snapshot => {
       const newArray = []
       snapshot.forEach(child => {
@@ -22,16 +24,10 @@ const Home = ({ userObj }) => {
           ...child.val()
         })
       })
-
       setMembers(newArray)
     })
-  }
-
-  useEffect(() => {
-    getMemberList()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // const [day, setDay] = useState([])
 
   const { name, gender } = inputs
   const hadleInputChange = (e) => {
@@ -50,26 +46,27 @@ const Home = ({ userObj }) => {
     })
   }
 
-  const handleUpdateClick = () => {
-    const userId = userObj.uid
-    set(ref(db, 'reactTennis/members/' + userId), {
-      uid: userId,
-      name: '정학'
-    });
-  }
-
-  const onSubmit = (e) => {
+  const onSubmit = e => {
     e.preventDefault()
     writeUserData()
+    setInputs({
+      ...inputs,
+      name: ''
+    })
+    
+    inputRef.current.focus()
   }
 
 
   const handleGenderClick = e => {
     const { value } = e.target
+    
     setInputs({
       ...inputs,
       gender: value
     })
+
+    console.log(gender)
   }
 
   // const handleDayClick = e => {
@@ -87,6 +84,7 @@ const Home = ({ userObj }) => {
         <div>
           <span>이름</span>
           <input
+            ref={inputRef}
             name="name"
             value={name}
             onChange={hadleInputChange}
@@ -95,7 +93,7 @@ const Home = ({ userObj }) => {
         </div>
         <div>
           <span>성별</span>
-          <label>남성<input type="radio" onClick={handleGenderClick} name="gender" value="M" /></label>
+          <label>남성<input type="radio" onClick={handleGenderClick} name="gender" value="M" defaultChecked /></label>
           <label>여성<input type="radio" onClick={handleGenderClick} name="gender" value="F" /></label>
         </div>
         {/* <div>
@@ -113,10 +111,9 @@ const Home = ({ userObj }) => {
           <input type="number" name="range" onChange={hadleInputChange} value={range} />
         </div> */}
         <input type="submit" value="submit" />
-        <button type="button" onClick={handleUpdateClick}>update</button>
       </form>
       {members.map(member => (
-        <Members member={member} />
+        <Members key={member.id} member={member} />
       ))}
     </>
   )

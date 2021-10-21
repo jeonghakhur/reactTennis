@@ -4,20 +4,28 @@ import Navigation from '../components/Navigation'
 import Home from '../routes/Home'
 import Auth from '../routes/Auth'
 import Profile from '../routes/Profile'
+import Schedule from '../routes/Schedule'
 
 const AppRouter = ({ isLoggedIn, userObj }) => {
   return (
     <Router>
       <Navigation isLoggedIn={isLoggedIn} userObj={userObj} />
       <Switch>
-        <Route exact path="/">
-          <Home userObj={userObj} />
+      <Route path="/schedule/:name">
+          <Schedule />
         </Route>
+        <Route path="/schedule">
+          <Schedule />
+        </Route> 
+
         <Route exact path="/auth">
           <Auth />
         </Route>
-        <Route exact path="/profile">
+        <Route path="/profile">
           <Profile />
+        </Route>
+        <Route exact path="/">
+          <Home userObj={userObj} />
         </Route>
       </Switch>
     </Router>

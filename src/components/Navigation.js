@@ -24,14 +24,19 @@ const Navigation = ({ isLoggedIn }) => {
           <Link to="/">HOME</Link>
         </li>
         <li>
-          <Link to="/profile">Profile</Link>
+          <Link to="/schedule">Schedule</Link>
         </li>
         {isLoggedIn ? (
-          <li>
-            <button type="button" onClick={handleLogout}>
-              LogOut
-            </button>
-          </li>
+          <>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <button type="button" onClick={handleLogout}>
+                LogOut
+              </button>
+            </li>
+          </>
         ) : (
           <li>
             <Link to="/auth">signIn</Link>
