@@ -5,6 +5,7 @@ import Home from '../routes/Home'
 import Auth from '../routes/Auth'
 import Profile from '../routes/Profile'
 import Schedule from '../routes/Schedule'
+import ScheduleDetail from '../routes/ScheduleDetail'
 
 const AppRouter = ({ isLoggedIn, userObj }) => {
   return (
@@ -12,7 +13,7 @@ const AppRouter = ({ isLoggedIn, userObj }) => {
       <Navigation isLoggedIn={isLoggedIn} userObj={userObj} />
       <Switch>
       <Route path="/schedule/:name">
-          <Schedule />
+          <ScheduleDetail />
         </Route>
         <Route path="/schedule">
           <Schedule />
