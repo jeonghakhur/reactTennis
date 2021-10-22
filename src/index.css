@@ -16,3 +16,14 @@ code {
 .sign-wrap .isChecked {
   background-color: aquamarine;
 }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 5px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}

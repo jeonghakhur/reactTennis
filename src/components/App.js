@@ -8,6 +8,7 @@ function App() {
   const auth = getAuth()
 
   useEffect(() => {
+    console.clear()
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserObj(user)
@@ -16,7 +17,6 @@ function App() {
       }
       setInit(true)
     })
-    console.log('mm')
   }, [auth])
 
 
