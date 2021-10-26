@@ -45,7 +45,7 @@ const ScheduleDetail = () => {
             if (aId > bId) {
               return -1
             }
-            
+            return 0
           })
 
           setMembers(newArray)

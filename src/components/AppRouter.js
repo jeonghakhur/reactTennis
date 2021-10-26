@@ -6,27 +6,34 @@ import Auth from '../routes/Auth'
 import Profile from '../routes/Profile'
 import Schedule from '../routes/Schedule'
 import ScheduleDetail from '../routes/ScheduleDetail'
+import Game from '../routes/Game'
+import GameDetail from '../routes/GameDetail'
 
 const AppRouter = ({ isLoggedIn, userObj }) => {
   return (
     <Router>
       <Navigation isLoggedIn={isLoggedIn} userObj={userObj} />
       <Switch>
-      <Route path="/schedule/:name">
+        <Route exact path="/">
+          <Home userObj={userObj} />
+        </Route>
+        <Route path="/schedule/:name">
           <ScheduleDetail />
         </Route>
         <Route path="/schedule">
           <Schedule />
-        </Route> 
-
+        </Route>
+        <Route path="/games/:name">
+          <GameDetail />
+        </Route>
+        <Route past="/games">
+          <Game />
+        </Route>
         <Route exact path="/auth">
           <Auth />
         </Route>
         <Route path="/profile">
           <Profile />
-        </Route>
-        <Route exact path="/">
-          <Home userObj={userObj} />
         </Route>
       </Switch>
     </Router>

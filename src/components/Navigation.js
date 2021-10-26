@@ -21,11 +21,12 @@ const Navigation = ({ isLoggedIn }) => {
     <nav>
       <ul>
         <li>
-          <Link to="/">HOME</Link>
+          <Link to="/">홈</Link>
         </li>
         <li>
-          <Link to="/schedule">Schedule</Link>
+          <Link to="/schedule">참석여부</Link>
         </li>
+        <li><Link to="/games">게임</Link></li>
         {isLoggedIn ? (
           <>
             <li>
