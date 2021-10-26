@@ -9,6 +9,7 @@ import {
   remove,
   query,
   orderByChild,
+  off,
 } from 'firebase/database'
 
 const Schedule = () => {
@@ -38,6 +39,8 @@ const Schedule = () => {
         })
       })
 
+      
+
       newArray.sort((a, b) => {
         if (a.date > b.date) {
           return -1
@@ -47,7 +50,10 @@ const Schedule = () => {
         }
         return 0
       })
+
       setSchedules(newArray)
+
+      
     })
 
     onValue(membersRef, (snapshot) => {
@@ -60,6 +66,13 @@ const Schedule = () => {
       })
       setMembers(newArray)
     })
+
+    return () => {
+   off(scheduleRef)
+    off(membersRef)
+    }
+
+ 
     // console.log(schedules[0].member)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -84,19 +97,22 @@ const Schedule = () => {
       alert('멤버가 선택되지 않았습니다.')
       return
     }
-    console.log('day', day, checkMembers)
+    // console.log('day', day, checkMembers)
     const scheduleRef = ref(db, 'reactTennis/schedule')
     const newRef = push(scheduleRef)
     set(newRef, {
       date,
-      day,
-      members: checkMembers.map((member) => {
-        const obj = {
-          name: member,
-          account: 'N',
-        }
-        return obj
-      }),
+      day
+    })
+
+    checkMembers.forEach((member, idx) => {
+      const id = checkMembers.length - (idx + 1)
+      const membersRef = ref(db, 'reactTennis/schedule/' + newRef.key + '/members/' + id)
+      set(membersRef, {
+        account: 0,
+        desc: '',
+        name: member
+      })
     })
   }
 
@@ -170,7 +186,7 @@ const Schedule = () => {
           </button>
           <div>
             {members.map((member) => (
-              <label key={member.id}>
+              <label key={member.id} className="label">
                 <input
                   type="checkbox"
                   name="memberName"
@@ -203,7 +219,7 @@ const Schedule = () => {
                   <Link to={`/schedule/${data.id}`}>{data.date}</Link>
                 </td>
                 <td>{data.day}</td>
-                <td>{data.members.length}</td>
+                <td>{data.members ? Object.keys(data.members).length : 0}</td>
                 <td>
                   <button
                     type="button"
