@@ -18,7 +18,7 @@ const Navigation = ({ isLoggedIn }) => {
   }
 
   return (
-    <nav>
+    <nav className="top-nav">
       <ul>
         <li>
           <Link to="/">홈</Link>

@@ -1,3 +1,8 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,10 +10,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  > div {
-    padding: 0 1rem 3rem;
-  }
 }
 
 code {
@@ -16,6 +17,9 @@ code {
     monospace;
 }
 
+.ly-container {
+  padding: 0 1rem 3rem;
+}
 
 .sign-wrap .isChecked {
   background-color: aquamarine;
@@ -41,6 +45,93 @@ td {
   margin: 1rem 0;
 }
 
-.select {
+input,
+select,
+button {
+  font-size: 1rem;
+  height: 2.5rem;
+}
 
+button {
+  appearance: none;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  white-space: nowrap;
+}
+
+select {
+  border-width: 1px;
+}
+input[type='text'],
+input[type='number'],
+input[type="date"] {
+  padding: 0 1rem;
+  border: 1px solid #666;
+}
+
+input[type="date"] {
+  appearance: none;
+}
+
+.top-nav {
+  margin: 1rem 0;
+  ul {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  li {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.form-col {
+  display: flex;
+  padding: 0.25rem 0;
+  align-items: center;
+
+  label:first-child {
+    display: inline-block;
+    width: 20%;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  button {
+    flex: 1;
+  }
+
+  button:last-child {
+    margin-left: 0.5rem;
+  }
+}
+
+
+.mr-1 {
+  margin-right: 0.5rem;
+}
+
+.court-list:not(:first-child) {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 3px solid #000;
+}
+
+.d-f {
+  display: flex;
+  margin: 0 -.25rem;
+
+  > * {
+    flex: 1;
+    margin: 0 .25rem;
+    width: 100%;
+  }
+}
+
+.row {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
