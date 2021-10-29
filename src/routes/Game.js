@@ -2,26 +2,28 @@ import React, { useState, useEffect } from 'react'
 // import { Link } from 'react-router-dom'
 
 const gameItemTemplate = `
-  <div className="game-item">
-  <div className="game-head">게임 진행 시간: <span clsssName="game-time">12:00</span></div>
-  <div className="d-f row">
-    <input type="text" name="game-name-a" />
-    <input type="text" name="game-name-a" />
-    <span className="fg-n">vs</span>
-    <input type="text" name="game-name-b" />
-    <input type="text" name="game-name-b" />
-  </div>
-  <div className="d-f row">
-    <input type="number" name="score-a" />
-    <input type="number" name="score-b" />
-    <button type="button" className="btn-delete">삭제</button>
-    <button type="button" className="btn-save">저장</button>
-  </div>
+  <div class="game-head">게임 진행 시간: <span clsssName="game-time">12:00</span></div>
+    <div class="d-flex">
+      <div class="input-wrap">
+        <div class="col">
+          <input type="text" name="game-name-a" />
+          <input type="text" name="game-name-a" />
+          <input type="number" name="score-a" />
+        </div>
+        <div class="col">
+          <input type="text" name="game-name-b" />
+          <input type="text" name="game-name-b" />
+          <input type="number" name="score-b" / >
+        </div>
+      </div>
+      <button type="button" class="btn-delete">삭제</button>
+    </div>
   </div>`
 
 const Game = () => {
   // const court = []
   // const games = []
+  const [games, setGames] = useState([])
   const now = new Date()
   const year = now.getFullYear()
   let month = now.getMonth() + 1
@@ -49,11 +51,11 @@ const Game = () => {
 
   const handleClickCourtAdd = () => {
     const container = document.querySelector('#courtListContainer')
-    const template = document.querySelector('#gameList')
+    const template = document.querySelector('.court-list')
     const clone = template.cloneNode(true)
     const div = document.createElement('div')
     const button = document.createElement('button')
-    const uId = 'gameList-' + ~~(Math.random() * 1000000)
+    const uId = 'courtList-' + ~~(Math.random() * 1000000)
     clone.id = uId
     div.classList.add('d-f', 'row')
     button.type = 'button'
@@ -97,9 +99,8 @@ const Game = () => {
       }
       court.push(obj)
     }
-    // console.log(court)
 
-    // 코트명 중복 검사
+    // 입력값 검사
     (() => {
       const nameArr = []
       const moveArr = []
@@ -146,105 +147,87 @@ const Game = () => {
           return
         }
       }
+
+      setCreateGame(court)
     })()
-
-    // const mapValue = els => {
-    //   if (!els) return
-    //   return [].map.call(els, el => el.value)
-    // }
-
-    // const court = {
-    //   name: mapValue(courtName),
-    //   move: mapValue(courtTimeMove),
-    //   startTime: [],
-    //   startHour: mapValue(courtTimeStartHour),
-    //   startMinute: mapValue(courtTimeStartMinute),
-    //   endTime: [],
-    //   endHour: mapValue(courtTimeEndHour),
-    //   endMinute: mapValue(courtTimeEndMinute)
-    // }
-
-    // function isDuplicate(arr) {
-    //   let isDup = false
-    //   for (let i = 0; i < arr.length; i += 1) {
-    //     if (arr.indexOf(arr[i]) !== arr.lastIndexOf(arr[i])) {
-    //       isDup = arr.lastIndexOf(arr[i])
-    //       break
-    //     } else {
-    //       isDup = false
-    //     }
-    //   }
-    //   return isDup
-    // }
-
-    // // 코트명이 동일한 경우 리턴
-    // const isDupCourt = isDuplicate(court.name)
-    // if (isDupCourt) {
-    //   const returnEl = document.querySelectorAll('[name="courtName"]')[isDupCourt]
-    //   alert('코크명이 동잏합니다.')
-    //   returnEl.focus()
-    //   return
-    // }
-
-    // // 게임 시간이 작성 안된 경우 리턴
-    // court.move.forEach((move, idx) => {
-    //   const minute = Number(move)
-    //   const focusEl = document.querySelectorAll('[name="courtTimeMove"]')[idx]
-    //   if (!minute) {
-    //     alert('게임 진행 시간을 입력해주세요')
-    //     focusEl.focus()
-    //     return 
-    //   }
-
-    //   if (minute < 20 || minute > 40) {
-    //     alert('게임 진행 시간은 최소 20분에서 최대 40분 입니다.')
-    //     focusEl.focus()
-    //     return
-    //   }
-    // })
-
-    // // 게임 종료 시간이 시작 시간 보다 작거나 같은 지 체크
-    // court.startHour.forEach((startHour, idx) => {
-    //   const {endHour, startMinute, endMinute} = court
-    //   const startTime = new Date(year, month - 1, date, startHour, startMinute).getTime()
-    //   const endTime = new Date(year, month - 1, date, endHour, endMinute).getTime()
-    //   const moveTime = court.move[idx] * 60 * 1000
-    //   console.log()
-    //   if (endTime - startTime < moveTime) {
-    //     alert('게임 가능 시간을 확인해 주세요')
-    //     return
-    //   }
-    //   court.startTime.push(startTime)
-    //   court.endTime.push(endTime)
-    // })
-//
-    setCreateGame(court)
   }
 
   const setCreateGame = (court) => {
-    // const contanier = document.querySelector('#gameList')
-    // const template = gameItemTemplate
-    // const games = []
-      
-    // court.forEach(obj => {
+    document.querySelector('#gameList').innerHTML = ''
+    court.forEach(obj => {
+      const {name, move, startTime, endTime} = obj
+      const moveTime = move * 60 * 1000
+      const len = (endTime - startTime) / moveTime
+      const newArray = []
+      for (let i = 0; i < len; i += 1) {
+        const s = startTime + (moveTime * i)
+        newArray.push({
+          name,
+          startTime: s,
+          endTime: s + moveTime,
+          pair: [],
+          player: [],
+          score: []
+        })
+      }
 
-    //   const len = (court.endTime[idx] - st) / (court.move[idx] * 60 * 1000)
-    //   console.log('len', len, st)
-    //   for(let i = 0; i < len; i += 1) {
-    //     console.log('idx', idx, i)
-    //   }
-      
+    // 시간 순서로 정렬
+      newArray.sort((a, b) => {
+        if (a.startTime < b.startTime) {
+          return -1
+        }
+        return 0
+      })
+
+      setGames(pre => [...pre, newArray])
+    })
+
+
+    // games.forEach(game => setElement(game))
+  }
+
+  const setElement = () => {
+    console.log(games)
+    // const { startTime, endTime, name } = game
+    // const gameListEl = document.querySelector('#gameList')
+    // const item = document.createElement('div')
+    // item.classList.add('game-item')
+    // item.innerHTML = gameItemTemplate
+    // const btnDelete = item.querySelector('.btn-delete')
+
+    // const head = item.querySelector('.game-head')
+    // const startDate = new Date(startTime)
+    // const endDate = new Date(endTime)
+    // let startHour = startDate.getHours()
+    // let startMinute = startDate.getMinutes()
+    // let endHour = endDate.getHours()
+    // let endMinute = endDate.getMinutes()
+    // startHour = startHour < 10 ? '0' + startHour : startHour
+    // startMinute = startMinute < 10 ? '0' + startMinute : startMinute
+    // endHour = endHour < 10 ? '0' + endHour : endHour
+    // endMinute = endMinute < 10 ? '0' + endMinute : endMinute
+
+    // head.textContent = `${name}:${startHour}:${startMinute}~${endHour}:${endMinute}`
+    // gameListEl.appendChild(item)
+
+    // btnDelete.addEventListener('click', () => {
+    //   item.remove()
     // })
-    
+  }
+
+  const handleSubmitGameSave = (e) => {
+    e.preventDefault()
+    console.log('game save')
   }
 
   useEffect(() => {
-    const form = document.querySelector('#submit')
-    form.addEventListener('click', handleSubmitGameCreate)
-    form.dispatchEvent(new Event('click'))
+    setElement()
+    // const form = document.querySelector('#submit')
+    // form.addEventListener('click', handleSubmitGameCreate)
+    // form.dispatchEvent(new Event('click'))
+    // console.log(games)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
-
+  }, [games])
 
   // 
 
@@ -264,7 +247,7 @@ const Game = () => {
           </button>
         </div>
         <div id="courtListContainer">
-          <div className="form-row court-list" id="gameList">
+          <div className="form-row court-list">
             <div className="form-col d-f">
               <input
                 name="courtName"
@@ -317,11 +300,15 @@ const Game = () => {
         </div>
         <div className="d-f row">
           <input type="submit" value="게임생성" id="submit" />
-          <button type="button">게임저장</button>
         </div>
       </form>
       <div id="gameContainer">
-        <div id="gameList"></div>
+        <form onSubmit={handleSubmitGameSave}>
+          <div id="gameList"></div>
+          <input type="submit" value="게임저장" />
+        </form>
+        
+        
       </div>
       {/* <p>
         <Link to="/games/1">Link 1</Link>

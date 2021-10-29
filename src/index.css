@@ -66,12 +66,12 @@ select {
 
 input[type='text'],
 input[type='number'],
-input[type="date"] {
+input[type='date'] {
   padding: 0 1rem;
   border: 1px solid #666;
 }
 
-input[type="date"] {
+input[type='date'] {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -112,8 +112,8 @@ input[type="date"] {
   width: 20%;
 }
 
-.form-col input[type="text"],
-.form-col input[type="number"],
+.form-col input[type='text'],
+.form-col input[type='number'],
 .form-col button {
   -webkit-box-flex: 1;
       -ms-flex: 1;
@@ -134,7 +134,7 @@ input[type="date"] {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: 0 -.25rem;
+  margin: 0 -0.25rem;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -147,18 +147,73 @@ input[type="date"] {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  margin: 0 .25rem;
+  margin: 0 0.25rem;
   width: 100%;
 }
 
 .row {
-  margin-top: .5rem;
-  margin-bottom: .5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .fg-n {
   -webkit-box-flex: 0 !important;
       -ms-flex-positive: 0 !important;
           flex-grow: 0 !important;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+          appearance: none;
+}
+
+.game-item .input-wrap {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  margin: -.5rem 0;
+}
+
+.game-item .col {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: .5rem -.25rem;
+  font-size: 0;
+}
+
+.game-item .col input[type="text"] {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  width: 100%;
+  margin: 0 .25rem;
+}
+
+.game-item .col input[type="number"] {
+  width: 20%;
+  margin: 0 .25rem;
+}
+
+.game-item .btn-delete {
+  width: 88px;
+  height: initial;
+  margin-left: .5rem;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+}
+
+.d-flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
 }
 /*# sourceMappingURL=index.css.map */

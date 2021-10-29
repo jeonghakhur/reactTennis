@@ -64,12 +64,12 @@ select {
 }
 input[type='text'],
 input[type='number'],
-input[type="date"] {
+input[type='date'] {
   padding: 0 1rem;
   border: 1px solid #666;
 }
 
-input[type="date"] {
+input[type='date'] {
   appearance: none;
 }
 
@@ -98,13 +98,12 @@ input[type="date"] {
     width: 20%;
   }
 
-  input[type="text"],
-  input[type="number"],
+  input[type='text'],
+  input[type='number'],
   button {
     flex: 1;
   }
 }
-
 
 .mr-1 {
   margin-right: 0.5rem;
@@ -118,23 +117,66 @@ input[type="date"] {
 
 .d-f {
   display: flex;
-  margin: 0 -.25rem;
+  margin: 0 -0.25rem;
   align-items: center;
   justify-content: center;
 
   > * {
     flex: 1;
-    margin: 0 .25rem;
+    margin: 0 0.25rem;
     width: 100%;
   }
 }
 
 .row {
-  margin-top: .5rem;
-  margin-bottom: .5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
-
 
 .fg-n {
   flex-grow: 0 !important;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+.game-item {
+
+  .input-wrap {
+    flex: 1;
+    margin: -.5rem 0;
+  }
+  
+  .col {
+    display: flex;
+    margin: .5rem -.25rem;
+    font-size: 0;
+
+    input[type="text"] {
+      flex: 1;
+      width: 100%;
+      margin: 0 .25rem;
+    }
+
+    input[type="number"] {
+      width: 20%;
+      margin: 0 .25rem;
+    }
+  }
+
+  .btn-delete {
+    width: 88px;
+    height: initial;
+    margin-left: .5rem;
+    align-items: stretch;
+  }
+}
+
+//util
+.d-flex {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
 }
