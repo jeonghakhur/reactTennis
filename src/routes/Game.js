@@ -27,9 +27,13 @@ const Game = () => {
   const now = new Date()
   const year = now.getFullYear()
   let month = now.getMonth() + 1
-  const date = now.getDate()
+  let date = now.getDate()
   if (month < 10) {
     month = 0 + String(month)
+  }
+
+  if (date < 10) {
+    date = 0 + String(date)
   }
 
   const [gameDate, setGameDate] = useState(`${year}-${month}-${date}`)
@@ -80,35 +84,61 @@ const Game = () => {
     const court = []
 
     const courtName = document.querySelectorAll('input[name="courtName"]')
-    const courtTimeMove = document.querySelectorAll('input[name="courtTimeMove"]')
-    const courtTimeStartHour = document.querySelectorAll('input[name="courtTimeStartHour"]')
-    const courtTimeStartMinute = document.querySelectorAll('input[name="courtTimeStartMinute"]')
-    const courtTimeEndHour = document.querySelectorAll('input[name="courtTimeEndHour"]')
-    const courtTimeEndMinute = document.querySelectorAll('input[name="courtTimeEndMinute"]')
+    const courtNumber = document.querySelectorAll(
+      'input[name="courtNumber"]'
+    )
+    const courtTimeMove = document.querySelectorAll(
+      'input[name="courtTimeMove"]'
+    )
+    const courtTimeStartHour = document.querySelectorAll(
+      'input[name="courtTimeStartHour"]'
+    )
+    const courtTimeStartMinute = document.querySelectorAll(
+      'input[name="courtTimeStartMinute"]'
+    )
+    const courtTimeEndHour = document.querySelectorAll(
+      'input[name="courtTimeEndHour"]'
+    )
+    const courtTimeEndMinute = document.querySelectorAll(
+      'input[name="courtTimeEndMinute"]'
+    )
 
     const len = courtName.length
 
-    
-    
-    for(let i = 0; i < len; i += 1) {
+    for (let i = 0; i < len; i += 1) {
       const obj = {
         name: courtName[i].value,
+        number: courtNumber[i].value,
         move: courtTimeMove[i].value,
-        startTime: new Date(year, month - 1, date, courtTimeStartHour[i].value, courtTimeStartMinute[i].value).getTime(),
-        endTime: new Date(year, month - 1, date, courtTimeEndHour[i].value, courtTimeEndMinute[i].value).getTime(),
+        startTime: new Date(
+          year,
+          month - 1,
+          date,
+          courtTimeStartHour[i].value,
+          courtTimeStartMinute[i].value
+        ).getTime(),
+        endTime: new Date(
+          year,
+          month - 1,
+          date,
+          courtTimeEndHour[i].value,
+          courtTimeEndMinute[i].value
+        ).getTime(),
       }
       court.push(obj)
     }
 
     // 입력값 검사
-    (() => {
+    ;(() => {
       const nameArr = []
+      const numberArr = []
       const moveArr = []
       const startTime = []
       const endTime = []
 
-      court.forEach(obj => {
+      court.forEach((obj) => {
         nameArr.push(obj.name)
+        numberArr.push(obj.number)
         moveArr.push(obj.move)
         startTime.push(obj.startTime)
         endTime.push(obj.endTime)
@@ -116,11 +146,15 @@ const Game = () => {
 
       for (let i = 0; i < nameArr.length; i += 1) {
         const name = nameArr[i]
-        const first = nameArr.indexOf(name)
-        const last = nameArr.lastIndexOf(name)
+        const number = numberArr[i]
+        const nameFirst = nameArr.indexOf(name)
+        const nameLast = nameArr.lastIndexOf(name)
+        const numberFirst = numberArr.indexOf(number)
+        const numberLast = numberArr.lastIndexOf(number)
+        console.log(number)
 
-        if (first !== last) {
-          const focusEl = courtName[last]
+        if (nameFirst !== nameLast && numberFirst !== numberLast) {
+          const focusEl = courtNumber[numberLast]
           alert('동일한 코트 명이 있습니다.')
           focusEl.focus()
           return
@@ -153,25 +187,21 @@ const Game = () => {
   }
 
   const setCreateGame = (court) => {
-    document.querySelector('#gameList').innerHTML = ''
-    court.forEach(obj => {
-      const {name, move, startTime, endTime} = obj
+    const newArray = []
+    court.forEach((obj, idx) => {
+      const { name, move, startTime, endTime } = obj
       const moveTime = move * 60 * 1000
       const len = (endTime - startTime) / moveTime
-      const newArray = []
+
       for (let i = 0; i < len; i += 1) {
-        const s = startTime + (moveTime * i)
+        const s = startTime + moveTime * i
         newArray.push({
           name,
           startTime: s,
           endTime: s + moveTime,
-          pair: [],
-          player: [],
-          score: []
         })
       }
 
-    // 시간 순서로 정렬
       newArray.sort((a, b) => {
         if (a.startTime < b.startTime) {
           return -1
@@ -179,40 +209,54 @@ const Game = () => {
         return 0
       })
 
-      setGames(pre => [...pre, newArray])
+      // if (games[idx]) {
+      //   if (JSON.stringify(newArray) !== JSON.stringify(games[idx])) {
+      //     setGames(games.map((val, i) => (idx === i ? newArray : val)))
+      //   }
+      // } else {
+      //   setGames((pre) => [...pre, newArray])
+      // }
     })
 
-
-    // games.forEach(game => setElement(game))
+    if (JSON.stringify(newArray) !== JSON.stringify(games)) {
+      setGames(newArray)
+    }
   }
 
   const setElement = () => {
-    console.log(games)
-    // const { startTime, endTime, name } = game
+    document.querySelector('#gameList').innerHTML = ''
+    const gameListEl = document.querySelector('#gameList')
+    games.forEach((game) => {
+      const { name, startTime, endTime } = game
+      const item = document.createElement('div')
+      item.classList.add('game-item')
+      item.innerHTML = gameItemTemplate
+      const btnDelete = item.querySelector('.btn-delete')
+      const head = item.querySelector('.game-head')
+      const startDate = new Date(startTime)
+      const endDate = new Date(endTime)
+      let startHour = startDate.getHours()
+      let startMinute = startDate.getMinutes()
+      let endHour = endDate.getHours()
+      let endMinute = endDate.getMinutes()
+      startHour = startHour < 10 ? '0' + startHour : startHour
+      startMinute = startMinute < 10 ? '0' + startMinute : startMinute
+      endHour = endHour < 10 ? '0' + endHour : endHour
+      endMinute = endMinute < 10 ? '0' + endMinute : endMinute
+
+      head.textContent = `${name}:${startHour}:${startMinute}~${endHour}:${endMinute}`
+      gameListEl.appendChild(item)
+
+      btnDelete.addEventListener('click', () => {
+        item.remove()
+      })
+    })
+
+    // const { startTime, endTime, name } = games
     // const gameListEl = document.querySelector('#gameList')
-    // const item = document.createElement('div')
-    // item.classList.add('game-item')
-    // item.innerHTML = gameItemTemplate
-    // const btnDelete = item.querySelector('.btn-delete')
 
-    // const head = item.querySelector('.game-head')
-    // const startDate = new Date(startTime)
-    // const endDate = new Date(endTime)
-    // let startHour = startDate.getHours()
-    // let startMinute = startDate.getMinutes()
-    // let endHour = endDate.getHours()
-    // let endMinute = endDate.getMinutes()
-    // startHour = startHour < 10 ? '0' + startHour : startHour
-    // startMinute = startMinute < 10 ? '0' + startMinute : startMinute
-    // endHour = endHour < 10 ? '0' + endHour : endHour
-    // endMinute = endMinute < 10 ? '0' + endMinute : endMinute
 
-    // head.textContent = `${name}:${startHour}:${startMinute}~${endHour}:${endMinute}`
-    // gameListEl.appendChild(item)
 
-    // btnDelete.addEventListener('click', () => {
-    //   item.remove()
-    // })
   }
 
   const handleSubmitGameSave = (e) => {
@@ -226,43 +270,46 @@ const Game = () => {
     // form.addEventListener('click', handleSubmitGameCreate)
     // form.dispatchEvent(new Event('click'))
     // console.log(games)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [games])
 
-  // 
+  //
 
   return (
     <div>
-      <form onSubmit={handleSubmitGameCreate} >
-        <div className="form-col">
-          <input
-            name="gameDate"
-            type="date"
-            value={gameDate}
-            onChange={handleChangeGameDate}
-            className="mr-1"
-          />
-          <button type="button" onClick={handleClickCourtAdd}>
-            코트추가
-          </button>
-        </div>
+      <form onSubmit={handleSubmitGameCreate}>
         <div id="courtListContainer">
           <div className="form-row court-list">
-            <div className="form-col d-f">
-              <input
-                name="courtName"
-                type="text"
-                placeholder="코트명 입력"
-                defaultValue="A"
-                required
-              />
-              <input
-                name="courtTimeMove"
-                type="number"
-                placeholder="진행 시간"
-                defaultValue="30"
-                required
-              />
+            <div className="form-col court-head">
+              <div className="court-date">
+                <input
+                  name="gameDate"
+                  type="date"
+                  value={gameDate}
+                  onChange={handleChangeGameDate}
+                />
+              </div>
+              <div className="court-name">
+                <input type="text" name="courtName" defaultValue="그랜드슬램" required />
+              </div>
+              <div className="court-number">
+                <input
+                  name="courtNumber"
+                  type="text"
+                  placeholder="코트 번호 입력"
+                  defaultValue="A"
+                  required
+                />
+              </div>
+              <div className="court-time-move">
+                <input
+                  name="courtTimeMove"
+                  type="number"
+                  placeholder="진행 시간"
+                  defaultValue="30"
+                  required
+                />
+              </div>
             </div>
             <div className="form-col d-f">
               <input
@@ -272,7 +319,7 @@ const Game = () => {
                 placeholder="시작 시간"
                 required
               />
-              :
+              {/* : */}
               <input
                 name="courtTimeStartMinute"
                 type="number"
@@ -287,7 +334,7 @@ const Game = () => {
                 defaultValue="23"
                 required
               />
-              :
+              {/* : */}
               <input
                 name="courtTimeEndMinute"
                 type="number"
@@ -299,6 +346,9 @@ const Game = () => {
           </div>
         </div>
         <div className="d-f row">
+          <button type="button" onClick={handleClickCourtAdd}>
+            코트추가
+          </button>
           <input type="submit" value="게임생성" id="submit" />
         </div>
       </form>
@@ -307,8 +357,6 @@ const Game = () => {
           <div id="gameList"></div>
           <input type="submit" value="게임저장" />
         </form>
-        
-        
       </div>
       {/* <p>
         <Link to="/games/1">Link 1</Link>
