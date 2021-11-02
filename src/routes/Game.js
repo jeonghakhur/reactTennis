@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { db } from '../firebase'
+import { push, ref, set, onValue } from 'firebase/database'
 // import { Link } from 'react-router-dom'
 
 const gameItemTemplate = `
@@ -6,24 +8,23 @@ const gameItemTemplate = `
     <div class="d-flex">
       <div class="input-wrap">
         <div class="col">
-          <input type="text" name="game-name-a" />
-          <input type="text" name="game-name-a" />
-          <input type="number" name="score-a" />
+          <input type="text" class="player" />
+          <input type="text" class="player" />
         </div>
         <div class="col">
-          <input type="text" name="game-name-b" />
-          <input type="text" name="game-name-b" />
-          <input type="number" name="score-b" / >
+          <input type="text" class="player" />
+          <input type="text" class="player" />
         </div>
       </div>
-      <button type="button" class="btn-delete">삭제</button>
     </div>
   </div>`
 
 const Game = () => {
-  // const court = []
-  // const games = []
-  const [games, setGames] = useState([])
+  const [gameData, setGameData] = useState([])
+  const [court, setCourt] = useState([])
+  const gameList = []
+  const gameListRef = ref(db, `reactTennis/games/`)
+  const newGameListRef = push(gameListRef)
   const now = new Date()
   const year = now.getFullYear()
   let month = now.getMonth() + 1
@@ -36,18 +37,20 @@ const Game = () => {
     date = 0 + String(date)
   }
 
+  const readGame = () => {
+    onValue(gameListRef, (snapshot) => {
+      snapshot.forEach((child) => {
+        gameList.push({
+          id: child.key,
+        })
+      })
+    })
+
+    console.log(gameList)
+  }
+  readGame()
+
   const [gameDate, setGameDate] = useState(`${year}-${month}-${date}`)
-
-  // const hourOption = Array(24).fill(0).map((v, i) => {
-  //   return (<option key={i} value={i}>{i < 10 ? `0${i}`: i}</option>)
-  // })
-
-  // const minuteOption = Array(6).fill(0).map((v, i) => {
-  //   const value = 10 * i
-  //   return (<option key={value} value={value}>{value < 10 ? `0${value}`: value}</option>)
-  // })
-
-  // const [courtInfo, setCourtInfo] = useState([])
 
   const handleChangeGameDate = (e) => {
     setGameDate(e.target.value)
@@ -69,6 +72,7 @@ const Game = () => {
       const confirm = window.confirm('정말로 삭제하시겠습니까?')
       if (confirm) {
         clone.remove()
+        handleSubmitGameCreate()
       }
       return
     })
@@ -79,124 +83,197 @@ const Game = () => {
   }
 
   const handleSubmitGameCreate = (e) => {
-    e.preventDefault()
-
-    const court = []
-
-    const courtName = document.querySelectorAll('input[name="courtName"]')
-    const courtNumber = document.querySelectorAll(
-      'input[name="courtNumber"]'
-    )
-    const courtTimeMove = document.querySelectorAll(
-      'input[name="courtTimeMove"]'
-    )
-    const courtTimeStartHour = document.querySelectorAll(
-      'input[name="courtTimeStartHour"]'
-    )
-    const courtTimeStartMinute = document.querySelectorAll(
-      'input[name="courtTimeStartMinute"]'
-    )
-    const courtTimeEndHour = document.querySelectorAll(
-      'input[name="courtTimeEndHour"]'
-    )
-    const courtTimeEndMinute = document.querySelectorAll(
-      'input[name="courtTimeEndMinute"]'
-    )
-
-    const len = courtName.length
-
-    for (let i = 0; i < len; i += 1) {
-      const obj = {
-        name: courtName[i].value,
-        number: courtNumber[i].value,
-        move: courtTimeMove[i].value,
-        startTime: new Date(
-          year,
-          month - 1,
-          date,
-          courtTimeStartHour[i].value,
-          courtTimeStartMinute[i].value
-        ).getTime(),
-        endTime: new Date(
-          year,
-          month - 1,
-          date,
-          courtTimeEndHour[i].value,
-          courtTimeEndMinute[i].value
-        ).getTime(),
-      }
-      court.push(obj)
+    if (e) {
+      e.preventDefault()
     }
 
-    // 입력값 검사
-    ;(() => {
-      const nameArr = []
-      const numberArr = []
-      const moveArr = []
-      const startTime = []
-      const endTime = []
+    const courtName = document.querySelector('input[name="courtName"]')
+    const courtTimeMove = document.querySelector(
+      'input[name="courtTimeMove"]'
+    )
 
-      court.forEach((obj) => {
-        nameArr.push(obj.name)
-        numberArr.push(obj.number)
-        moveArr.push(obj.move)
-        startTime.push(obj.startTime)
-        endTime.push(obj.endTime)
-      })
+    const courtNumber = [
+      ...document.querySelectorAll('input[name="courtNumber"]'),
+    ]
+    const courtTimeStartHour = [
+      ...document.querySelectorAll('input[name="courtTimeStartHour"]'),
+    ]
+    const courtTimeStartMinute = [
+      ...document.querySelectorAll('input[name="courtTimeStartMinute"]'),
+    ]
+    const courtTimeEndHour = [
+      ...document.querySelectorAll('input[name="courtTimeEndHour"]'),
+    ]
+    const courtTimeEndMinute = [
+      ...document.querySelectorAll('input[name="courtTimeEndMinute"]'),
+    ]
 
-      for (let i = 0; i < nameArr.length; i += 1) {
-        const name = nameArr[i]
-        const number = numberArr[i]
-        const nameFirst = nameArr.indexOf(name)
-        const nameLast = nameArr.lastIndexOf(name)
-        const numberFirst = numberArr.indexOf(number)
-        const numberLast = numberArr.lastIndexOf(number)
-        console.log(number)
+    const moveTime = courtTimeMove.value * 60 * 1000
 
-        if (nameFirst !== nameLast && numberFirst !== numberLast) {
-          const focusEl = courtNumber[numberLast]
-          alert('동일한 코트 명이 있습니다.')
-          focusEl.focus()
-          return
-        }
+    if (moveTime < (20 * 60 * 1000) || moveTime> (40 * 60 * 1000)) {
+      alert('게임 진행시간은 20분 이상 40분 이하로 작성해주세요')
+      courtTimeMove.focus()
+    }
 
-        const move = Number(moveArr[i])
-        const moveEl = courtTimeMove[i]
-        if (!move) {
-          alert('게임 진행 시간을 입력해주세요')
-          moveEl.focus()
-          return
-        }
+    const numberArr = []
+    const newObj = {
+      date: gameDate,
+      name: courtName.value,
+      moveTime,
+      court: []
+    }
 
-        if (move < 20 || move > 40) {
-          alert('게임 진행 시간은 최소 20분 이상 최대 40분 이하로 입력해주세요')
-          moveEl.focus()
-          return
-        }
+    for(let i = 0; i < courtNumber.length; i += 1) {
+      numberArr.push(courtNumber[i].value)
+    }
 
-        const moveTime = move * 60 * 1000
-        if (endTime[i] - startTime[i] < moveTime) {
-          alert('게임 가능 시간을 체크해 주세요')
-          courtTimeStartHour[i].focus()
-          return
-        }
+    for(let i = 0; i < courtNumber.length; i += 1) {
+      const number = courtNumber[i].value
+      const numberFirst = numberArr.indexOf(number)
+      const numberLast = numberArr.lastIndexOf(number)
+      const startHour = courtTimeStartHour[i].value
+      const startMinute = courtTimeStartMinute[i].value
+      const endHour = courtTimeEndHour[i].value
+      const endMinute = courtTimeEndMinute[i].value
+      const startTime = new Date(
+        year,
+        month - 1,
+        date,
+        courtTimeStartHour[i].value,
+        courtTimeStartMinute[i].value
+      ).getTime()
+      const endTime =  new Date(
+        year,
+        month - 1,
+        date,
+        courtTimeEndHour[i].value,
+        courtTimeEndMinute[i].value
+      ).getTime()
+
+      if (numberFirst !== numberLast) {
+        alert('동일한 코드 번호가 있습니다.')
+        courtNumber[numberLast].focus()
+        return
+      }
+      
+      if (endTime - startTime < moveTime) {
+        alert('게임 가능 시간을 확인해 주세요.')
+        courtTimeStartHour[i].focus()
+        return
       }
 
-      setCreateGame(court)
-    })()
+      newObj.court.push({
+        number,
+        startHour,
+        startMinute,
+        endHour,
+        endMinute,
+      })
+
+    }
+
+    console.log(newObj)
+
+
+
+    // const len = courtName.length
+    // const newArray = []
+    // for (let i = 0; i < len; i += 1) {
+    //   const obj = {
+    //     name: courtName[i].value,
+    //     number: courtNumber[i].value,
+    //     move: courtTimeMove[i].value,
+    //     startTime: new Date(
+    //       year,
+    //       month - 1,
+    //       date,
+    //       courtTimeStartHour[i].value,
+    //       courtTimeStartMinute[i].value
+    //     ).getTime(),
+    //     endTime: new Date(
+    //       year,
+    //       month - 1,
+    //       date,
+    //       courtTimeEndHour[i].value,
+    //       courtTimeEndMinute[i].value
+    //     ).getTime(),
+    //   }
+
+    //   newArray.push(obj)
+    // }
+
+    // // 입력값 검사
+    // ;(() => {
+    //   const nameArr = []
+    //   const numberArr = []
+    //   const moveArr = []
+    //   const startTime = []
+    //   const endTime = []
+
+    //   newArray.forEach((obj) => {
+    //     nameArr.push(obj.name)
+    //     numberArr.push(obj.number)
+    //     moveArr.push(obj.move)
+    //     startTime.push(obj.startTime)
+    //     endTime.push(obj.endTime)
+    //   })
+
+    //   for (let i = 0; i < nameArr.length; i += 1) {
+    //     const name = nameArr[i]
+    //     const number = numberArr[i]
+    //     const nameFirst = nameArr.indexOf(name)
+    //     const nameLast = nameArr.lastIndexOf(name)
+    //     const numberFirst = numberArr.indexOf(number)
+    //     const numberLast = numberArr.lastIndexOf(number)
+
+    //     if (nameFirst !== nameLast && numberFirst !== numberLast) {
+    //       const focusEl = courtNumber[numberLast]
+    //       alert('동일한 코트 명이 있습니다.')
+    //       focusEl.focus()
+    //       return
+    //     }
+
+    //     const move = Number(moveArr[i])
+    //     const moveEl = courtTimeMove[i]
+    //     if (!move) {
+    //       alert('게임 진행 시간을 입력해 주세요')
+    //       moveEl.focus()
+    //       return
+    //     }
+
+    //     if (move < 20 || move > 40) {
+    //       alert(
+    //         '게임 진행 시간은 최소 20분 이상 최대 40분 이하로 입력해 주세요'
+    //       )
+    //       moveEl.focus()
+    //       return
+    //     }
+
+    //     const moveTime = move * 60 * 1000
+    //     if (endTime[i] - startTime[i] < moveTime) {
+    //       alert('게임 가능 시간을 체크해 주세요')
+    //       courtTimeStartHour[i].focus()
+    //       return
+    //     }
+    //   }
+
+    //   // setCreateGame(court)
+    // })()
   }
 
   const setCreateGame = (court) => {
+    console.log('gameData', gameData)
     const newArray = []
-    court.forEach((obj, idx) => {
-      const { name, move, startTime, endTime } = obj
+    court.forEach((obj) => {
+      const { name, number, move, startTime, endTime } = obj
       const moveTime = move * 60 * 1000
       const len = (endTime - startTime) / moveTime
 
       for (let i = 0; i < len; i += 1) {
         const s = startTime + moveTime * i
         newArray.push({
-          name,
+          id: i,
+          number,
           startTime: s,
           endTime: s + moveTime,
         })
@@ -208,30 +285,24 @@ const Game = () => {
         }
         return 0
       })
-
-      // if (games[idx]) {
-      //   if (JSON.stringify(newArray) !== JSON.stringify(games[idx])) {
-      //     setGames(games.map((val, i) => (idx === i ? newArray : val)))
-      //   }
-      // } else {
-      //   setGames((pre) => [...pre, newArray])
-      // }
     })
 
-    if (JSON.stringify(newArray) !== JSON.stringify(games)) {
-      setGames(newArray)
+    // console./log('newArray', newArray, gameData)
+
+    if (JSON.stringify(newArray) !== JSON.stringify(gameData)) {
+      setGameData(newArray)
     }
   }
 
   const setElement = () => {
     document.querySelector('#gameList').innerHTML = ''
     const gameListEl = document.querySelector('#gameList')
-    games.forEach((game) => {
-      const { name, startTime, endTime } = game
+    gameData.forEach((game) => {
+      const { id, name, number, startTime, endTime } = game
       const item = document.createElement('div')
+      item.id = 'gameList-' + id
       item.classList.add('game-item')
       item.innerHTML = gameItemTemplate
-      const btnDelete = item.querySelector('.btn-delete')
       const head = item.querySelector('.game-head')
       const startDate = new Date(startTime)
       const endDate = new Date(endTime)
@@ -244,34 +315,43 @@ const Game = () => {
       endHour = endHour < 10 ? '0' + endHour : endHour
       endMinute = endMinute < 10 ? '0' + endMinute : endMinute
 
-      head.textContent = `${name}:${startHour}:${startMinute}~${endHour}:${endMinute}`
+      head.textContent = `${name}-${number} ${startHour}:${startMinute}~${endHour}:${endMinute}`
       gameListEl.appendChild(item)
-
-      btnDelete.addEventListener('click', () => {
-        item.remove()
-      })
     })
-
-    // const { startTime, endTime, name } = games
-    // const gameListEl = document.querySelector('#gameList')
-
-
-
   }
 
-  const handleSubmitGameSave = (e) => {
-    e.preventDefault()
-    console.log('game save')
+  // const handleSubmitGameSave = (e) => {
+  //   e.preventDefault()
+  //   const gameList = document.querySelectorAll('.game-item')
+  //   gameList.forEach((el) => {
+  //     const id = Number(el.id.replace('gameList-', ''))
+  //     const player = {}
+  //     el.querySelectorAll('.player').forEach((input, idx) => {
+  //       if (input.value) {
+  //         player[idx] = input.value
+  //       }
+  //     })
+
+  //     if (Object.keys(player).length) {
+  //       // setGameData(gameData.map(game => game.id === id? {... game, player} : game))
+  //       setGameData(gameData.map(game => game.id === id? {... game, player} : game))
+  //     }
+  //   })
+  // }
+
+  const saveData = () => {
+    if (!gameData.length) return
+    set(newGameListRef, gameData)
   }
 
   useEffect(() => {
-    setElement()
-    // const form = document.querySelector('#submit')
-    // form.addEventListener('click', handleSubmitGameCreate)
-    // form.dispatchEvent(new Event('click'))
-    // console.log(games)
+    // console.log(gameData)
+    // setElement()
+    saveData()
+    // console.log(gameData.key)
+    // setElement()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [games])
+  }, [gameData, gameDate])
 
   //
 
@@ -279,19 +359,35 @@ const Game = () => {
     <div>
       <form onSubmit={handleSubmitGameCreate}>
         <div id="courtListContainer">
+          <div className="form-col">
+            <div className="court-date">
+              <input
+                name="gameDate"
+                type="date"
+                value={gameDate}
+                onChange={handleChangeGameDate}
+              />
+            </div>
+            <div className="court-name">
+              <input
+                type="text"
+                name="courtName"
+                defaultValue="그랜드슬램"
+                required
+              />
+            </div>
+            <div className="court-time-move">
+              <input
+                name="courtTimeMove"
+                type="number"
+                placeholder="진행 시간"
+                defaultValue="30"
+                required
+              />
+            </div>
+          </div>
           <div className="form-row court-list">
-            <div className="form-col court-head">
-              <div className="court-date">
-                <input
-                  name="gameDate"
-                  type="date"
-                  value={gameDate}
-                  onChange={handleChangeGameDate}
-                />
-              </div>
-              <div className="court-name">
-                <input type="text" name="courtName" defaultValue="그랜드슬램" required />
-              </div>
+            <div className="form-col d-f">
               <div className="court-number">
                 <input
                   name="courtNumber"
@@ -301,21 +397,10 @@ const Game = () => {
                   required
                 />
               </div>
-              <div className="court-time-move">
-                <input
-                  name="courtTimeMove"
-                  type="number"
-                  placeholder="진행 시간"
-                  defaultValue="30"
-                  required
-                />
-              </div>
-            </div>
-            <div className="form-col d-f">
               <input
                 name="courtTimeStartHour"
                 type="number"
-                defaultValue="19"
+                defaultValue={19}
                 placeholder="시작 시간"
                 required
               />
@@ -347,17 +432,17 @@ const Game = () => {
         </div>
         <div className="d-f row">
           <button type="button" onClick={handleClickCourtAdd}>
-            코트추가
+            코트 추가
           </button>
-          <input type="submit" value="게임생성" id="submit" />
+          <input type="submit" value="게임 생성" id="submit" />
         </div>
       </form>
-      <div id="gameContainer">
+      {/* <div id="gameContainer">
         <form onSubmit={handleSubmitGameSave}>
           <div id="gameList"></div>
-          <input type="submit" value="게임저장" />
+          <input type="submit" value="게임 저장" />
         </form>
-      </div>
+      </div> */}
       {/* <p>
         <Link to="/games/1">Link 1</Link>
       </p> */}
