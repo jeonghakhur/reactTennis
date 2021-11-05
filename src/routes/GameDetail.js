@@ -5,28 +5,22 @@ import { ref, update, onValue } from 'firebase/database'
 
 const docs = 'reactTennis/games/'
 const gameItemTemplate = `
-  <td class="number"></td>
-  <td class="corut"></td>
+  <td class="number">
+  </td>
+  <td class="court"></td>
   <td class="time"></td>
-  <td class="pair"></td>
-  <td class="pair"></td>
-  <td class="score"></td>
-  <td class="delete"></td>
-  <div class="game-head">게임 진행 시간: <span clsssName="game-time">12:00</span></div>
-    <div class="d-flex">
-      <div class="input-wrap">
-        <div class="col">
-          <span class="number">1</span>
-          <input type="text" class="player" />
-          <input type="text" class="player" />
-          <input type="text" class="player" />
-          <input type="text" class="player" />
-          <input type="number" class="score" min="0" max="6" />
-          <input type="number" class="score" min="0" max="6" />
-        </div>
-      </div>
-    </div>
-  </div>`
+  <td class="pair">
+    <input type="text" class="player" />
+    <input type="text" class="player" />
+  </td>
+  <td class="pair">
+    <input type="text" class="player" />
+    <input type="text" class="player" />
+  </td>
+  <td class="score">
+    <input type="number" class="score" min="0" max="6" />
+    <input type="number" class="score" min="0" max="6" />
+  </td>`
 
 const GameDetail = () => {
   const match = useRouteMatch()
@@ -143,11 +137,14 @@ const GameDetail = () => {
       endHour = endHour < 10? '0' + endHour : endHour
       let endMinute = endDate.getMinutes()
       endMinute = endMinute < 10? '0' + endMinute : endMinute
-      const item = document.createElement('div')
+      const item = document.createElement('tr')
+      item.key = id
       item.classList.add('game-item')
       item.innerHTML = gameItemTemplate
-      const head = item.querySelector('.game-head')
-      head.textContent = `${number}번 코트 ${startHour}:${startMinute} ~ ${endHour}:${endMinute}`
+      item.querySelector('.number').textContent = dataIndex + 1
+      item.querySelector('.court').textContent = number
+      item.querySelector('.time').innerHTML = `${startHour}:${startMinute} <br /> ${endHour}:${endMinute}`
+      // head.textContent = `${number}번 코트 
       const inputName = item.querySelectorAll('input[type="text"]')
       const inputScore = item.querySelectorAll('input[type="number"]')
 
@@ -202,16 +199,6 @@ const GameDetail = () => {
     //
   }
 
-  const Tbody = (props) => {
-    console.log('pros', props)
-    return (
-      <tbody>
-        <tr>
-          <td>asfas</td>
-        </tr>
-      </tbody>
-    )
-  }
 
   useEffect(() => {
     console.log('effect')
@@ -228,9 +215,16 @@ const GameDetail = () => {
   return (
     <div>
       <form onSubmit={handleSubmitGame}>
-        <div id="gameContainer"></div>
         <div>
           <table className="table">
+            <colgroup>
+              <col width="5%" />
+              <col width="5%"  />
+              <col width="10%" />
+              <col />
+              <col />
+              <col width="20%" />
+            </colgroup>
             <thead>
               <tr>
                 <th>번호</th>
@@ -239,11 +233,12 @@ const GameDetail = () => {
                 <th>페어 A</th>
                 <th>페어 B</th>
                 <th>스코어</th>
-                <th>삭제</th>
               </tr>
             </thead>
+            <tbody id="gameContainer">
+            {setElement(saveGames)}
+            </tbody>
           </table>
-          {setElement(saveGames)}
           <input type="submit" value="게임 저장" />
         </div>
       </form>
