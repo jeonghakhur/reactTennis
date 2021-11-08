@@ -80,6 +80,19 @@ const Home = ({ userObj }) => {
   return (
     <>
       <h2>Home</h2>
+      <div>
+        <section>
+          <h2>최근 게임 결과</h2>
+        </section>
+        <section>
+          <h2>순위</h2>
+        </section>
+        {userObj && (
+        <section>
+          <h2>나의 최근 게임 내역</h2>
+        </section>
+        )}
+      </div>
       <form onSubmit={onSubmit}>
         <div>
           <span>이름</span>
