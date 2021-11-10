@@ -24,13 +24,30 @@ code {
   background-color: aquamarine;
 }
 
+.scroll-wrap {
+  overflow: auto;
+}
+
+.scroll-wrap .table {
+  width: auto;
+}
+
 .table {
+  table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
 }
 
-td {
-  padding: 5px;
+.table th, .table td {
+  white-space: nowrap;
+  padding: 1rem .5rem;
+}
+
+.table th {
+  background-color: whitesmoke;
+}
+
+.table td {
   border-top: 1px solid #eee;
   text-align: center;
 }

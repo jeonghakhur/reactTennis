@@ -24,17 +24,35 @@ code {
 .sign-wrap .isChecked {
   background-color: aquamarine;
 }
+.scroll-wrap {
+  overflow: auto;
+
+  .table {
+    width: auto;
+  }
+}
 
 .table {
+  table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
+
+  th, td {
+    white-space: nowrap;
+    padding: 1rem .5rem;
+  }
+  
+  th {
+    background-color: darken(white, 4%);
+  }
+
+  td {
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
 }
 
-td {
-  padding: 5px;
-  border-top: 1px solid #eee;
-  text-align: center;
-}
+
 
 .label {
   display: inline-block;

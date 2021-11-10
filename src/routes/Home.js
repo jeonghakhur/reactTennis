@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import { db } from '../firebase'
 import { ref, push, set, onValue } from 'firebase/database'
 import Members from '../components/Members'
+import GamesRanking from '../components/gamesRanking'
 import _ from 'lodash'
-import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react'
 
 const DOC_GAME = 'reactTennis/games'
 
@@ -16,7 +16,6 @@ const Home = ({ userObj }) => {
   const inputRef = useRef()
 
   const [members, setMembers] = useState([])
-  const [games, setGames] = useState([])
 
   const membersListRef = ref(db, 'reactTennis/members')
 
@@ -30,98 +29,6 @@ const Home = ({ userObj }) => {
         })
       })
       setMembers(newArray)
-    })
-    
-    onValue(ref(db, DOC_GAME), snapshot => {
-      const newArray = []
-      snapshot.forEach(child => {
-        newArray.push({
-          id: child.key,
-          ...child.val()
-        })
-      })
-      console.log(newArray)
-
-      const gameArray = []
-      newArray.forEach(data => {
-        data.games.forEach(games => {
-          if (games.player[0] !== '') {
-            gameArray.push(games)
-          }
-        })
-      })
-      console.log(gameArray)
-
-      const gameMemberArray = []
-      gameArray.forEach(game => {
-        game.player.forEach(member => {
-          if (gameMemberArray.indexOf(member) === -1) {
-            gameMemberArray.push(member)
-          }
-        })
-      })
-
-      const userGame = gameMemberArray.map(gameMember => {
-        const obj = {}
-        obj.name = gameMember
-        obj.game = gameArray.filter(game => game.player.indexOf(gameMember) !== -1)
-        return obj
-      })
-
-
-      const newGame = []
-      userGame.forEach(user => {
-        let pointTotal = 0
-        let pointWin = 0
-        let pointLose = 0
-        let countWin = 0
-        let countLose = 0
-        let countTie = 0
-
-        user.game.forEach(game => {
-          const index = game.player.indexOf(user.name)
-          let myScore = 0
-          let yourScore = 0
-
-          if (index < 2) {
-            myScore = game.score[0]
-            yourScore = game.score[1]
-          } else {
-            myScore = game.score[1]
-            yourScore = game.score[0]
-          }
-
-          if (myScore > yourScore) {
-            pointTotal += 3
-            countWin += 1
-          } else if (myScore === yourScore) {
-            pointTotal += 1
-            countTie += 1
-          } else {
-            pointTotal += 0
-            countLose += 1
-          }
-
-          pointWin += Number(myScore)
-          pointLose += Number(yourScore)
-        })
-        
-        newGame.push({
-          name: user.name, 
-          countTotal: user.game.length,
-          countWin,
-          countLose,
-          countTie,
-          pointTotal,
-          pointWin,
-          pointLose,
-        })
-      })
-
-      console.log(newGame)
-
-
-      setGames(newArray)
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -176,13 +83,10 @@ const Home = ({ userObj }) => {
   // }
   return (
     <>
-      <h2>Home</h2>
       <div>
+        <GamesRanking members={members} />
         <section>
-          <h2>최근 게임 결과</h2>
-        </section>
-        <section>
-          <h2>순위</h2>
+          <h2>-</h2>
         </section>
         {userObj && (
         <section>
