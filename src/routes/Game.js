@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { db } from '../firebase'
-import { push, ref, set, onValue, query, orderByChild, remove } from 'firebase/database'
+import {
+  push,
+  ref,
+  set,
+  onValue,
+  query,
+  orderByChild,
+  remove,
+} from 'firebase/database'
 // import { Link } from 'react-router-dom'
 
 const gameItemTemplate = `
@@ -20,7 +28,8 @@ const gameItemTemplate = `
     </div>
   </div>`
 
-const Game = () => {
+const Game = ({userObj}) => {
+  const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : false
   const [gameData, setGameData] = useState([])
   const [court, setCourt] = useState({})
   const [gameList, setGameList] = useState([])
@@ -51,7 +60,6 @@ const Game = () => {
       setGameList(newArray.reverse())
     })
   }
-  
 
   const [gameDate, setGameDate] = useState(`${year}-${month}-${date}`)
 
@@ -67,7 +75,6 @@ const Game = () => {
     const button = document.createElement('button')
     const uId = 'courtList-' + ~~(Math.random() * 1000000)
     clone.id = uId
-    div.classList.add('d-f', 'row')
     button.type = 'button'
     button.textContent = '삭제'
 
@@ -80,8 +87,7 @@ const Game = () => {
       return
     })
 
-    div.appendChild(button)
-    clone.appendChild(div)
+    clone.appendChild(button)
     container.appendChild(clone)
   }
 
@@ -91,9 +97,7 @@ const Game = () => {
     }
 
     const courtName = document.querySelector('input[name="courtName"]')
-    const courtTimeMove = document.querySelector(
-      'input[name="courtTimeMove"]'
-    )
+    const courtTimeMove = document.querySelector('input[name="courtTimeMove"]')
 
     const courtNumber = [
       ...document.querySelectorAll('input[name="courtNumber"]'),
@@ -113,7 +117,7 @@ const Game = () => {
 
     const moveTime = Number(courtTimeMove.value)
 
-    if (moveTime < 20 || moveTime> 40) {
+    if (moveTime < 20 || moveTime > 40) {
       alert('게임 진행시간은 20분 이상 40분 이하로 작성해주세요')
       courtTimeMove.focus()
     }
@@ -123,14 +127,14 @@ const Game = () => {
       date: gameDate,
       name: courtName.value,
       moveTime,
-      court: []
+      court: [],
     }
 
-    for(let i = 0; i < courtNumber.length; i += 1) {
+    for (let i = 0; i < courtNumber.length; i += 1) {
       numberArr.push(courtNumber[i].value)
     }
 
-    for(let i = 0; i < courtNumber.length; i += 1) {
+    for (let i = 0; i < courtNumber.length; i += 1) {
       const number = courtNumber[i].value
       const numberFirst = numberArr.indexOf(number)
       const numberLast = numberArr.lastIndexOf(number)
@@ -145,7 +149,7 @@ const Game = () => {
         courtTimeStartHour[i].value,
         courtTimeStartMinute[i].value
       ).getTime()
-      const endTime =  new Date(
+      const endTime = new Date(
         year,
         month - 1,
         date,
@@ -248,9 +252,11 @@ const Game = () => {
   }
 
   const deleteData = (id) => {
+    const confirm = window.confirm('정말로 삭제하시겠습니까?')
+    if (!confirm) return
     remove(ref(db, 'reactTennis/games/' + id))
   }
- 
+
   useEffect(() => {
     // console.log(gameData)
     // saveData()
@@ -264,79 +270,69 @@ const Game = () => {
   return (
     <div>
       <form onSubmit={handleSubmitGameCreate}>
-        <div id="courtListContainer">
-          <div className="form-col">
-            <div className="court-date">
-              <input
-                name="gameDate"
-                type="date"
-                value={gameDate}
-                onChange={handleChangeGameDate}
-              />
-            </div>
-            <div className="court-name">
-              <input
-                type="text"
-                name="courtName"
-                defaultValue="그랜드슬램"
-                required
-              />
-            </div>
-            <div className="court-time-move">
-              <input
-                name="courtTimeMove"
-                type="number"
-                placeholder="진행 시간"
-                defaultValue="30"
-                required
-              />
-            </div>
+        <div id="courtListContainer" className="court-wrap">
+          <div className="row">
+            <input
+              name="gameDate"
+              type="date"
+              value={gameDate}
+              onChange={handleChangeGameDate}
+            />
+            <input
+              type="text"
+              name="courtName"
+              defaultValue="그랜드슬램"
+              required
+            />
+            <input
+              name="courtTimeMove"
+              type="number"
+              placeholder="진행 시간"
+              defaultValue="30"
+              required
+            />
           </div>
-          <div className="form-row court-list">
-            <div className="form-col d-f">
-              <div className="court-number">
-                <input
-                  name="courtNumber"
-                  type="text"
-                  placeholder="코트 번호 입력"
-                  defaultValue="A"
-                  required
-                />
-              </div>
-              <input
-                name="courtTimeStartHour"
-                type="number"
-                defaultValue={19}
-                placeholder="시작 시간"
-                required
-              />
-              {/* : */}
-              <input
-                name="courtTimeStartMinute"
-                type="number"
-                placeholder="시작 분"
-                defaultValue="00"
-                required
-              />
-              <input
-                name="courtTimeEndHour"
-                type="number"
-                placeholder="종료 시간 입력"
-                defaultValue="23"
-                required
-              />
-              {/* : */}
-              <input
-                name="courtTimeEndMinute"
-                type="number"
-                placeholder="종료 분 입력"
-                defaultValue="00"
-                required
-              />
-            </div>
+          <div className="row court-list" >
+            <input
+              name="courtNumber"
+              type="text"
+              placeholder="코트 번호 입력"
+              defaultValue="A"
+              required
+            />
+            <input
+              name="courtTimeStartHour"
+              type="number"
+              defaultValue={19}
+              placeholder="시작 시간"
+              required
+            />
+            {/* : */}
+            <input
+              name="courtTimeStartMinute"
+              type="number"
+              placeholder="시작 분"
+              defaultValue="00"
+              required
+            />
+            <input
+              name="courtTimeEndHour"
+              type="number"
+              placeholder="종료 시간 입력"
+              defaultValue="23"
+              required
+            />
+            {/* : */}
+            <input
+              name="courtTimeEndMinute"
+              type="number"
+              placeholder="종료 분 입력"
+              defaultValue="00"
+              required
+            />
           </div>
         </div>
-        <div className="d-f row">
+        <div className="row">
           <button type="button" onClick={handleClickCourtAdd}>
             코트 추가
           </button>
@@ -359,16 +355,22 @@ const Game = () => {
               <th>번호</th>
               <th>날짜</th>
               <th>코트명</th>
-              <th>삭제</th>
+              {auth && (<th>삭제</th>)}
             </tr>
           </thead>
           <tbody>
             {gameList.map((game, idx) => (
               <tr key={game.id}>
                 <td>{gameList.length - idx}</td>
-                <td><Link to={`/games/${game.id}`}>{game.date}</Link></td>
+                <td>
+                  <Link to={`/games/${game.id}`}>{game.date}</Link>
+                </td>
                 <td>{game.name}</td>
-                <td><button type="button" onClick={() => deleteData(game.id)}>삭제</button></td>
+                {auth && (<td>
+                  <button type="button" onClick={() => deleteData(game.id)}>
+                    삭제
+                  </button>
+                </td>)}
               </tr>
             ))}
           </tbody>

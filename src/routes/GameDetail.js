@@ -74,7 +74,7 @@ const GameDetail = () => {
             number,
             startTime: startTime + moveTimestamp * i,
             endTime: startTime + moveTimestamp * i + moveTimestamp,
-            player: ['','','',''],
+            player: ['', '', '', ''],
             score: ['', ''],
           })
         }
@@ -129,22 +129,24 @@ const GameDetail = () => {
       const { id, number, startTime, endTime, player, score } = data
       const startDate = new Date(startTime)
       let startHour = startDate.getHours()
-      startHour = startHour < 10? '0' + startHour : startHour
+      startHour = startHour < 10 ? '0' + startHour : startHour
       let startMinute = startDate.getMinutes()
-      startMinute = startMinute < 10? '0' + startMinute : startMinute
+      startMinute = startMinute < 10 ? '0' + startMinute : startMinute
       const endDate = new Date(endTime)
       let endHour = endDate.getHours()
-      endHour = endHour < 10? '0' + endHour : endHour
+      endHour = endHour < 10 ? '0' + endHour : endHour
       let endMinute = endDate.getMinutes()
-      endMinute = endMinute < 10? '0' + endMinute : endMinute
+      endMinute = endMinute < 10 ? '0' + endMinute : endMinute
       const item = document.createElement('tr')
       item.key = id
       item.classList.add('game-item')
       item.innerHTML = gameItemTemplate
       item.querySelector('.number').textContent = dataIndex + 1
       item.querySelector('.court').textContent = number
-      item.querySelector('.time').innerHTML = `${startHour}:${startMinute} <br /> ${endHour}:${endMinute}`
-      // head.textContent = `${number}번 코트 
+      item.querySelector(
+        '.time'
+      ).innerHTML = `${startHour}:${startMinute} <br /> ${endHour}:${endMinute}`
+      // head.textContent = `${number}번 코트
       const inputName = item.querySelectorAll('input[type="text"]')
       const inputScore = item.querySelectorAll('input[type="number"]')
 
@@ -152,7 +154,7 @@ const GameDetail = () => {
         el.name = 'name'
         el.id = `name-${id}-${idx}`
         el.dataset.id = 'name-' + id
-        el.dataset.index  = idx
+        el.dataset.index = idx
         el.value = player[idx] ? player[idx] : ''
       })
 
@@ -160,45 +162,52 @@ const GameDetail = () => {
         el.name = 'score'
         el.id = `score-${id}-${idx}`
         el.dataset.id = 'score-' + id
-        el.dataset.index  = idx
+        el.dataset.index = idx
         el.value = score[idx] ? score[idx] : ''
       })
-      
+
       container.append(item)
     })
 
-    document.querySelector('#gameContainer').addEventListener('focus', e => {
-      if (e.target.tagName === 'INPUT') {
-        console.log(e.target.id)
-        lastFocus = e.target.id
-      }
-    }, {capture: true})
+    document.querySelector('#gameContainer').addEventListener(
+      'focus',
+      (e) => {
+        if (e.target.tagName === 'INPUT') {
+          lastFocus = e.target.id
+        }
+      },
+      { capture: true }
+    )
   }
 
   const handleSubmitGame = (e) => {
     e.preventDefault()
-    
-    const newArray = saveGames.map(game => {
+
+    const newArray = saveGames.map((game) => {
       const newPlayer = game.player.map((name, idx) => {
-        const el = document.querySelector(`[data-id="name-${game.id}"][data-index="${idx}"]`)
+        const el = document.querySelector(
+          `[data-id="name-${game.id}"][data-index="${idx}"]`
+        )
         return name === el.value ? name : el.value
       })
       const newScore = game.score.map((score, idx) => {
-        const el = document.querySelector(`[data-id="score-${game.id}"][data-index="${idx}"]`)
+        const el = document.querySelector(
+          `[data-id="score-${game.id}"][data-index="${idx}"]`
+        )
         return score === el.value ? score : el.value
       })
-      return {...game, player: [...newPlayer], score: [...newScore]}
+      return { ...game, player: [...newPlayer], score: [...newScore] }
     })
 
     update(ref(db, `${docs}${gameId}`), {
       games: newArray,
     }).then(() => {
-      console.log('update')
-      document.querySelector(`#${lastFocus}`).focus()
+      if (lastFocus) {
+        document.querySelector(`#${lastFocus}`).focus()
+      }
     })
     //
   }
-
 
   useEffect(() => {
     console.log('effect')
@@ -213,14 +222,14 @@ const GameDetail = () => {
   }, [])
 
   return (
-    <div>
+    <div className="game-detail">
       <form onSubmit={handleSubmitGame}>
-        <div>
+        <div className="scroll-wrap">
           <table className="table">
             <colgroup>
-              <col width="5%" />
-              <col width="5%"  />
-              <col width="10%" />
+              <col />
+              <col />
+              <col />
               <col />
               <col />
               <col width="20%" />
@@ -235,11 +244,11 @@ const GameDetail = () => {
                 <th>스코어</th>
               </tr>
             </thead>
-            <tbody id="gameContainer">
-            {setElement(saveGames)}
-            </tbody>
+            <tbody id="gameContainer">{setElement(saveGames)}</tbody>
           </table>
-          <input type="submit" value="게임 저장" />
+        </div>
+        <div className="btn-wrap floating">
+          <input type="submit" value="게임 저장" className="btn btn-primary" />
         </div>
       </form>
     </div>

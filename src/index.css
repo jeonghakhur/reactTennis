@@ -34,7 +34,7 @@ code {
 
 .table {
   table-layout: fixed;
-  width: 100%;
+  min-width: 100%;
   border-collapse: collapse;
 }
 
@@ -44,7 +44,13 @@ code {
 }
 
 .table th {
-  background-color: whitesmoke;
+  background-color: #253858;
+  color: white;
+  border-left: 1px solid white;
+}
+
+.table th:first-child {
+  border-left: none;
 }
 
 .table td {
@@ -52,131 +58,18 @@ code {
   text-align: center;
 }
 
-.label {
-  display: inline-block;
-  min-width: 80px;
-}
-
-.member-add-wrap {
-  margin: 1rem 0;
-}
-
-input,
-select,
-button {
-  font-size: 1rem;
-  height: 2.5rem;
-}
-
-button {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  border-radius: 0.25rem;
-  border-width: 1px;
-  white-space: nowrap;
-}
-
-select {
-  border-width: 1px;
-}
-
 input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='date'],
+input[type='phone'],
 input[type='number'],
-input[type='date'] {
-  padding: 0 .5rem;
-  border: 1px solid #666;
-}
-
-input[type='date'] {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-}
-
-.top-nav {
-  margin: 1rem 0;
-}
-
-.top-nav ul {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  padding: 0;
+button[type='button'] {
+  border: 1px solid gray;
+  border-radius: .25rem;
+  background-color: white;
   margin: 0;
-  list-style: none;
-}
-
-.top-nav li {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  text-align: center;
-}
-
-.form-col {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  padding: 0.25rem 0;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.form-col label:first-child {
-  display: inline-block;
-  width: 20%;
-}
-
-.form-col input[type='text'],
-.form-col input[type='number'],
-.form-col button {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-}
-
-.mr-1 {
-  margin-right: 0.5rem;
-}
-
-.court-list:not(:first-child) {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 3px solid #000;
-}
-
-.d-f {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin: 0 -0.25rem;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-}
-
-.d-f > * {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  margin: 0 0.25rem;
-  width: 100%;
-}
-
-.row {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.fg-n {
-  -webkit-box-flex: 0 !important;
-      -ms-flex-positive: 0 !important;
-          flex-grow: 0 !important;
+  padding: 0 .5rem;
 }
 
 input[type='number']::-webkit-outer-spin-button,
@@ -185,72 +78,135 @@ input[type='number']::-webkit-inner-spin-button {
           appearance: none;
 }
 
-.game-item .input-wrap {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  margin: -.5rem 0;
+input,
+select,
+button {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  font-size: 1rem;
+  height: 2.5rem;
 }
 
-.game-item .col {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin: .5rem -.25rem;
-  font-size: 0;
+button {
+  white-space: nowrap;
 }
 
-.game-item .col .number {
-  font-size: .85rem;
+.game-detail {
+  position: relative;
+  padding-bottom: 3rem;
 }
 
-.game-item .col input[type="text"] {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  width: 100%;
-  margin: 0 .25rem;
+.game-detail .player {
+  width: 60px;
 }
 
-.game-item .col input[type="number"] {
-  width: 30px;
-  margin: 0 .25rem;
+.game-detail input {
   text-align: center;
 }
 
-.game-item .btn-delete {
-  width: 88px;
-  height: initial;
-  margin-left: .5rem;
-  -webkit-box-align: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
+.btn-wrap.floating {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  padding: 0 1rem;
 }
 
-.d-flex {
+.btn {
+  min-width: 100%;
+}
+
+.btn-primary {
+  height: 4rem;
+  background-color: #2684ff !important;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border-width: 0;
+  border-radius: .75rem;
+}
+
+.top-nav {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 2rem;
+  margin: 1rem 0;
+  border-radius: .75rem;
 }
 
-.court-head {
-  margin: 0 -.25rem;
+.top-nav ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
-.court-head > div {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+.top-nav li {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
+.top-nav li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  -webkit-transform: translate(0, -50%);
+          transform: translate(0, -50%);
+  width: 1px;
+  height: 70%;
+  background-color: black;
+  opacity: .5;
+}
+
+.top-nav li:first-child::before {
+  display: none;
+}
+
+.top-nav a {
+  padding: 1rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+.row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: .5rem 0;
+}
+
+.row > input {
+  width: 100%;
   margin: 0 .25rem;
 }
 
-.court-head > div input {
-  width: 100%;
+.court-wrap [name='gameDate'] {
+  width: 50%;
+}
+
+.court-wrap [name='courtName'] {
+  -ms-flex-item-align: stretch;
+      -ms-grid-row-align: stretch;
+      align-self: stretch;
+}
+
+.court-wrap [name='courtTimeMove'] {
+  width: 50px;
+}
+
+.court-wrap [name="courtNumber"] {
+  width: 25%;
+  text-align: center;
 }
 /*# sourceMappingURL=index.css.map */

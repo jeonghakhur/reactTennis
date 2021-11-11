@@ -27,10 +27,10 @@ const AppRouter = ({ isLoggedIn, userObj }) => {
           <Schedule />
         </Route>
         <Route path="/games/:name">
-          <GameDetail />
+          <GameDetail userObj={userObj}/>
         </Route>
-        <Route past="/games">
-          <Game />
+        <Route past="/games" >
+          <Game userObj={userObj} />
         </Route>
 
         <Route path="/profile">

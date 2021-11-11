@@ -18,23 +18,26 @@ code {
 }
 
 .ly-container {
+  // overflow: hidden;
   padding: 0 1rem 3rem;
 }
 
 .sign-wrap .isChecked {
   background-color: aquamarine;
 }
+
 .scroll-wrap {
   overflow: auto;
 
   .table {
     width: auto;
+    
   }
 }
 
 .table {
   table-layout: fixed;
-  width: 100%;
+  min-width: 100%;
   border-collapse: collapse;
 
   th, td {
@@ -43,7 +46,13 @@ code {
   }
   
   th {
-    background-color: darken(white, 4%);
+    background-color: #253858;
+    color: white;
+    border-left: 1px solid white;
+
+    &:first-child {
+      border-left: none;
+    }
   }
 
   td {
@@ -52,170 +61,292 @@ code {
   }
 }
 
-
-
-.label {
-  display: inline-block;
-  min-width: 80px;
+// input
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='date'],
+input[type='phone'],
+input[type='number'],
+button[type='button'] {
+  border: 1px solid darken(white, 50%);
+  border-radius: .25rem;
+  background-color: white;
+  margin: 0;
+  padding: 0 .5rem;
+  
 }
-
-.member-add-wrap {
-  margin: 1rem 0;
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  appearance: none;
 }
 
 input,
 select,
 button {
+  appearance: none;
   font-size: 1rem;
   height: 2.5rem;
 }
 
 button {
-  appearance: none;
-  border-radius: 0.25rem;
-  border-width: 1px;
   white-space: nowrap;
 }
 
-select {
-  border-width: 1px;
-}
-input[type='text'],
-input[type='number'],
-input[type='date'] {
-  padding: 0 .5rem;
-  border: 1px solid #666;
+
+// game-detail
+.game-detail {
+  position: relative;
+  padding-bottom: 3rem;
+
+  .player {
+    width: 60px;
+  }
+
+  input {
+    text-align: center;
+  }
 }
 
-input[type='date'] {
-  appearance: none;
+// buttion
+
+.btn-wrap {
+  &.floating {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    padding: 0 1rem;
+  }
 }
+
+.btn {
+  min-width: 100%;
+
+  &-primary {
+    height: 4rem;
+    background-color: #2684ff !important;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-width: 0;
+    border-radius: .75rem;
+  }
+}
+// .label {
+//   display: inline-block;
+//   min-width: 80px;
+// }
+
+// .member-add-wrap {
+//   margin: 1rem 0;
+// }
+
+
+// button {
+//   appearance: none;
+//   border-radius: 0.25rem;
+//   border-width: 1px;
+//   white-space: nowrap;
+// }
+
+// select {
+//   border-width: 1px;
+// }
+// input[type='text'],
+// input[type='number'],
+// input[type='date'] {
+//   padding: 0 .5rem;
+//   border: 1px solid #666;
+// }
+
+// input[type='date'] {
+//   appearance: none;
+// }
 
 .top-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 2rem;
+  // background-color: #23354d;
   margin: 1rem 0;
-  ul {
-    display: flex;
+  // padding: 0 2rem;
+  border-radius: .75rem;
+
+  ul { 
     padding: 0;
     margin: 0;
     list-style: none;
   }
 
   li {
-    flex: 1;
-    text-align: center;
-  }
-}
-
-.form-col {
-  display: flex;
-  padding: 0.25rem 0;
-  align-items: center;
-
-  label:first-child {
+    position: relative;
     display: inline-block;
-    width: 20%;
+    text-align: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translate(0, -50%);
+      width: 1px;
+      height: 70%;
+      background-color: black;
+      opacity: .5;
+    }
+
+    &:first-child::before {
+      display: none;
+    }
   }
 
-  input[type='text'],
-  input[type='number'],
-  button {
-    flex: 1;
-  }
-}
-
-.mr-1 {
-  margin-right: 0.5rem;
-}
-
-.court-list:not(:first-child) {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 3px solid #000;
-}
-
-.d-f {
-  display: flex;
-  margin: 0 -0.25rem;
-  align-items: center;
-  justify-content: center;
-
-  > * {
-    flex: 1;
-    margin: 0 0.25rem;
-    width: 100%;
+  a {
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
   }
 }
 
 .row {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.fg-n {
-  flex-grow: 0 !important;
-}
-
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
-  appearance: none;
-}
-
-.game-item {
-
-  .input-wrap {
-    flex: 1;
-    margin: -.5rem 0;
-  }
-  
-  .col {
-    display: flex;
-    margin: .5rem -.25rem;
-    font-size: 0;
-
-    .number {
-      font-size: .85rem;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      width: 100%;
-      margin: 0 .25rem;
-    }
-
-    input[type="number"] {
-      width: 30px;
-      margin: 0 .25rem;
-      text-align: center;
-    }
-  }
-
-  .btn-delete {
-    width: 88px;
-    height: initial;
-    margin-left: .5rem;
-    align-items: stretch;
-  }
-}
-
-//util
-.d-flex {
   display: flex;
-  justify-content: center;
-  align-items: stretch;
-}
+  margin: .5rem 0;
 
-.court {
-  &-head {
-    margin: 0 -.25rem;
-
-    > div {
-      flex: 1;
-      margin: 0 .25rem;
-
-      input {
-        width: 100%;
-      }
-    }
+  > input {
+    width: 100%;
+    margin: 0 .25rem;
   }
 }
+
+.court-wrap {
+  [name='gameDate'] {
+    width: 50%;
+  }
+
+  [name='courtName'] {
+    align-self: stretch;
+  }
+
+  [name='courtTimeMove'] {
+    width: 50px;
+  }
+
+  [name="courtNumber"] {
+    width: 25%;
+    text-align: center;
+  }
+}
+
+// .form-col {
+//   display: flex;
+//   padding: 0.25rem 0;
+//   align-items: center;
+
+//   label:first-child {
+//     display: inline-block;
+//     width: 20%;
+//   }
+
+//   input[type='text'],
+//   input[type='number'],
+//   button {
+//     flex: 1;
+//   }
+// }
+
+// .mr-1 {
+//   margin-right: 0.5rem;
+// }
+
+// .court-list:not(:first-child) {
+//   margin-top: 1rem;
+//   padding-top: 1rem;
+//   border-top: 3px solid #000;
+// }
+
+// .d-f {
+//   display: flex;
+//   margin: 0 -0.25rem;
+//   align-items: center;
+//   justify-content: center;
+
+//   > * {
+//     flex: 1;
+//     margin: 0 0.25rem;
+//     width: 100%;
+//   }
+// }
+
+// .row {
+//   margin-top: 0.5rem;
+//   margin-bottom: 0.5rem;
+// }
+
+// .fg-n {
+//   flex-grow: 0 !important;
+// }
+
+
+
+// .game-item {
+
+//   .input-wrap {
+//     flex: 1;
+//     margin: -.5rem 0;
+//   }
+  
+//   .col {
+//     display: flex;
+//     margin: .5rem -.25rem;
+//     font-size: 0;
+
+//     .number {
+//       font-size: .85rem;
+//     }
+
+//     input[type="text"] {
+//       flex: 1;
+//       width: 100%;
+//       margin: 0 .25rem;
+//     }
+
+//     input[type="number"] {
+//       width: 30px;
+//       margin: 0 .25rem;
+//       text-align: center;
+//     }
+//   }
+
+//   .btn-delete {
+//     width: 88px;
+//     height: initial;
+//     margin-left: .5rem;
+//     align-items: stretch;
+//   }
+// }
+
+// //util
+// .d-flex {
+//   display: flex;
+//   justify-content: center;
+//   align-items: stretch;
+// }
+
+// .court {
+//   &-head {
+//     margin: 0 -.25rem;
+
+//     > div {
+//       flex: 1;
+//       margin: 0 .25rem;
+
+//       input {
+//         width: 100%;
+//       }
+//     }
+//   }
+// }
 

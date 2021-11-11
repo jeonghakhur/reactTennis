@@ -79,7 +79,7 @@ const GamesRanking = ({ members }) => {
       })
 
       userGame.push({
-        ranking: false,
+        ranking: 1,
         name: user.name,
         countWin,
         countTie,
@@ -124,13 +124,11 @@ const GamesRanking = ({ members }) => {
 
       const len = rankingUser.length
       const point = rankingUser.map(user => user.pointTotal)
-      let ranking = Array.from({length: len}, () => 1)
       for (let i = 0; i < len; i += 1) {
         for (let j = 0; j < len; j += 1) {
-          if (point[j] > point[i]) ranking[i] += 1
+          if (point[j] > point[i]) rankingUser[i].ranking += 1
         }
       }
-      console.log(ranking)
 
       const container = document.querySelector('#rankingContainer')
 

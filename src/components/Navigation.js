@@ -23,9 +23,9 @@ const Navigation = ({ isLoggedIn }) => {
         <li>
           <Link to="/">홈</Link>
         </li>
-        <li>
+        {/* <li>
           <Link to="/schedule">참석여부</Link>
-        </li>
+        </li> */}
         <li><Link to="/games">게임</Link></li>
         {isLoggedIn ? (
           <>
