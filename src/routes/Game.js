@@ -28,7 +28,7 @@ const gameItemTemplate = `
     </div>
   </div>`
 
-const Game = ({userObj}) => {
+const Game = ({ userObj }) => {
   const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : false
   const [gameData, setGameData] = useState([])
   const [court, setCourt] = useState({})
@@ -269,76 +269,79 @@ const Game = ({userObj}) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmitGameCreate}>
-        <div id="courtListContainer" className="court-wrap">
+      {auth && (
+        <form onSubmit={handleSubmitGameCreate}>
+          <div id="courtListContainer" className="court-wrap">
+            <div className="row">
+              <input
+                name="gameDate"
+                type="date"
+                value={gameDate}
+                onChange={handleChangeGameDate}
+              />
+              <input
+                type="text"
+                name="courtName"
+                defaultValue="그랜드슬램"
+                required
+              />
+              <input
+                name="courtTimeMove"
+                type="number"
+                placeholder="진행 시간"
+                defaultValue="30"
+                required
+              />
+            </div>
+            <div className="row court-list">
+              <input
+                name="courtNumber"
+                type="text"
+                placeholder="코트 번호 입력"
+                defaultValue="A"
+                required
+              />
+              <input
+                name="courtTimeStartHour"
+                type="number"
+                defaultValue={19}
+                placeholder="시작 시간"
+                required
+              />
+              {/* : */}
+              <input
+                name="courtTimeStartMinute"
+                type="number"
+                placeholder="시작 분"
+                defaultValue="00"
+                required
+              />
+              <input
+                name="courtTimeEndHour"
+                type="number"
+                placeholder="종료 시간 입력"
+                defaultValue="23"
+                required
+              />
+              {/* : */}
+              <input
+                name="courtTimeEndMinute"
+                type="number"
+                placeholder="종료 분 입력"
+                defaultValue="00"
+                required
+              />
+            </div>
+          </div>
           <div className="row">
-            <input
-              name="gameDate"
-              type="date"
-              value={gameDate}
-              onChange={handleChangeGameDate}
-            />
-            <input
-              type="text"
-              name="courtName"
-              defaultValue="그랜드슬램"
-              required
-            />
-            <input
-              name="courtTimeMove"
-              type="number"
-              placeholder="진행 시간"
-              defaultValue="30"
-              required
-            />
+            <button type="button" onClick={handleClickCourtAdd}>
+              코트 추가
+            </button>
+            <input type="submit" value="게임 생성" id="submit" />
           </div>
-          <div className="row court-list" >
-            <input
-              name="courtNumber"
-              type="text"
-              placeholder="코트 번호 입력"
-              defaultValue="A"
-              required
-            />
-            <input
-              name="courtTimeStartHour"
-              type="number"
-              defaultValue={19}
-              placeholder="시작 시간"
-              required
-            />
-            {/* : */}
-            <input
-              name="courtTimeStartMinute"
-              type="number"
-              placeholder="시작 분"
-              defaultValue="00"
-              required
-            />
-            <input
-              name="courtTimeEndHour"
-              type="number"
-              placeholder="종료 시간 입력"
-              defaultValue="23"
-              required
-            />
-            {/* : */}
-            <input
-              name="courtTimeEndMinute"
-              type="number"
-              placeholder="종료 분 입력"
-              defaultValue="00"
-              required
-            />
-          </div>
-        </div>
-        <div className="row">
-          <button type="button" onClick={handleClickCourtAdd}>
-            코트 추가
-          </button>
-          <input type="submit" value="게임 생성" id="submit" />
-        </div>
-      </form>
+        </form>
+      )}
+
       {/* <div id="gameContainer">
         <form onSubmit={handleSubmitGameSave}>
           <div id="gameList"></div>
@@ -355,7 +358,7 @@ const Game = ({userObj}) => {
               <th>번호</th>
               <th>날짜</th>
               <th>코트명</th>
-              {auth && (<th>삭제</th>)}
+              {auth && <th>삭제</th>}
             </tr>
           </thead>
           <tbody>
@@ -366,11 +369,13 @@ const Game = ({userObj}) => {
                   <Link to={`/games/${game.id}`}>{game.date}</Link>
                 </td>
                 <td>{game.name}</td>
-                {auth && (<td>
-                  <button type="button" onClick={() => deleteData(game.id)}>
-                    삭제
-                  </button>
-                </td>)}
+                {auth && (
+                  <td>
+                    <button type="button" onClick={() => deleteData(game.id)}>
+                      삭제
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

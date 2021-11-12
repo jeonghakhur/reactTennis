@@ -22,7 +22,10 @@ const gameItemTemplate = `
     <input type="number" class="score" min="0" max="6" />
   </td>`
 
-const GameDetail = () => {
+const GameDetail = ({ userObj }) => {
+  const user = userObj.email ? userObj.email : false
+  const admin = user === 'jeonghak.hur@gmail.com' ? true : false
+  console.log(userObj)
   const match = useRouteMatch()
   const gameId = match.params.name
   // const [loadData, setLoadData] = useState()
@@ -85,42 +88,6 @@ const GameDetail = () => {
     setSaveGames(newArray)
   }
 
-  const handleChangeName = (event, id, idx) => {
-    const { value } = event.target
-    // setNames([{id, idx, value}])
-
-    // setSaveGames(
-    //   saveGames.map((game, idx) => {
-    //     if (idx === dataIndex) {
-    //       game.player[inputIndex] = value
-    //       return game
-    //     } else {
-    //       return game
-    //     }
-    //   })
-    // )
-  }
-
-  const handleChangeScore = (event, dataIndex, inputIndex) => {
-    const { value } = event.target
-    if (value > 6) {
-      alert('6 이상의 수를 입력할 수 없습니다.')
-      event.target.value = ''
-      event.target.focus()
-      return
-    }
-    // setSaveGames(
-    //   saveGames.map((game, idx) => {
-    //     if (idx === dataIndex) {
-    //       game.score[inputIndex] = value
-    //       return game
-    //     } else {
-    //       return game
-    //     }
-    //   })
-    // )
-  }
-
   const setElement = (dataArray) => {
     if (!dataArray) return
     const container = document.querySelector('#gameContainer')
@@ -180,7 +147,7 @@ const GameDetail = () => {
     )
   }
 
-  const handleSubmitGame = (e) => {
+  const handleSubmitGame = (e, final) => {
     e.preventDefault()
 
     const newArray = saveGames.map((game) => {
@@ -196,7 +163,7 @@ const GameDetail = () => {
         )
         return score === el.value ? score : el.value
       })
-      return { ...game, player: [...newPlayer], score: [...newScore] }
+      return { ...game, player: [...newPlayer], score: [...newScore], final: final ? true : false, writer: user  }
     })
 
     update(ref(db, `${docs}${gameId}`), {
@@ -248,7 +215,21 @@ const GameDetail = () => {
           </table>
         </div>
         <div className="btn-wrap floating">
-          <input type="submit" value="게임 저장" className="btn btn-primary" />
+          <input
+            type="submit"
+            value="임시 저장"
+            className="btn btn-secondary"
+          />
+          {admin && (
+            <input
+              button="butotn"
+              value="최종 저장"
+              className="btn btn-primary"
+              onClick={(e) => {
+                handleSubmitGame(e, 'final')
+              }}
+            />
+          )}
         </div>
       </form>
     </div>

@@ -16,6 +16,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+h2 {
+  margin: 1rem 0;
+  line-height: 1.5rem;
+  font-size: 1.25rem;
+}
+
 .ly-container {
   padding: 0 1rem 3rem;
 }
@@ -32,6 +38,14 @@ code {
   width: auto;
 }
 
+.co-win {
+  color: red;
+}
+
+.co-lose {
+  color: blue;
+}
+
 .table {
   table-layout: fixed;
   min-width: 100%;
@@ -40,13 +54,14 @@ code {
 
 .table th, .table td {
   white-space: nowrap;
-  padding: 1rem .5rem;
+  padding: .75rem .5rem;
+  font-size: .75rem;
 }
 
 .table th {
   background-color: #253858;
   color: white;
-  border-left: 1px solid white;
+  border: 1px solid white;
 }
 
 .table th:first-child {
@@ -105,26 +120,41 @@ button {
   text-align: center;
 }
 
+.btn-wrap {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0 -.5rem;
+}
+
 .btn-wrap.floating {
+  background-color: #fff;
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   left: 0;
   right: 0;
-  padding: 0 1rem;
+  padding: 1rem;
 }
 
 .btn {
-  min-width: 100%;
-}
-
-.btn-primary {
-  height: 4rem;
-  background-color: #2684ff !important;
-  color: white;
-  font-size: 1.25rem;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
   font-weight: bold;
   border-width: 0;
   border-radius: .75rem;
+  height: 3rem;
+  margin: 0 .5rem;
+  width: 100%;
+}
+
+.btn-primary {
+  background-color: #2684ff !important;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #e6e6e6;
 }
 
 .top-nav {

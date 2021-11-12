@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { db } from '../firebase'
 import { ref, onValue } from 'firebase/database'
 import _ from 'lodash'
+import LastGame from '../components/LastGame'
 
 const DOC_GAME = 'reactTennis/games'
 
@@ -13,6 +14,7 @@ const GamesRanking = ({ members }) => {
   const getGames = (data) => {
     const newArray = []
     data.forEach((data) => {
+      if (!data.games) return
       data.games.forEach((games) => {
         if (games.player[0] !== '') {
           newArray.push(games)
@@ -86,64 +88,43 @@ const GamesRanking = ({ members }) => {
         countLose,
         countTotal: user.game.length,
         pointTotal,
-        pointPercent: Number(countWin / user.game.length).toFixed(3),
+        pointPercent: Number(countWin / (countWin + countLose)).toFixed(3),
         pointWin,
         pointLose,
-        pointDiff: (pointWin - pointLose)
+        pointDiff: pointWin - pointLose,
       })
     })
 
-
-    
-
-    // function solution(arr){
-    //   let n = arr.length;
-    //   let answer = Array.from({length:n}, ()=>1);
-    //   for(let i = 0; i<n; i++){
-    //     for(let j =0; j<n; j++){
-    //       if(arr[j] > arr[i]) answer[i]++;
-    //     }
-    //   }
-      
-    //   return answer;
-    // }
-    
-    // let arr =[ 87, 89, 100, 100, 76 ];
-
-    console.log(userGame)
-
-    const rankingUser =
-      _.reverse(
-        _.sortBy(
-          _.filter(userGame, (game) => {
-            return _.find(members, (member) => member.name === game.name)
-          }),
-          'pointTotal'
-        )
+    const rankingUser = _.reverse(
+      _.sortBy(
+        _.filter(userGame, (game) => {
+          return _.find(members, (member) => member.name === game.name)
+        }),
+        'pointTotal'
       )
+    )
 
-      const len = rankingUser.length
-      const point = rankingUser.map(user => user.pointTotal)
-      for (let i = 0; i < len; i += 1) {
-        for (let j = 0; j < len; j += 1) {
-          if (point[j] > point[i]) rankingUser[i].ranking += 1
-        }
+    const len = rankingUser.length
+    const point = rankingUser.map((user) => user.pointTotal)
+    for (let i = 0; i < len; i += 1) {
+      for (let j = 0; j < len; j += 1) {
+        if (point[j] > point[i]) rankingUser[i].ranking += 1
       }
+    }
 
-      const container = document.querySelector('#rankingContainer')
+    const container = document.querySelector('#rankingContainer')
 
-      rankingUser.forEach(user => {
-        const row = document.createElement('tr')
-        for (const p in user) {
-          const cell = document.createElement('td')
-          cell.classList.add(p)
-          cell.textContent = user[p]
-          row.appendChild(cell)
-        }
-        container.appendChild(row)
-      })
-      // return rankingUser
-      // console.log(rankingUser)
+    rankingUser.forEach((user) => {
+      const row = document.createElement('tr')
+      for (const p in user) {
+        const cell = document.createElement('td')
+        cell.classList.add(p)
+        cell.textContent = user[p]
+        row.appendChild(cell)
+      }
+      container.appendChild(row)
+    })
+
     setUserGames(rankingUser)
   }
 
@@ -162,21 +143,14 @@ const GamesRanking = ({ members }) => {
       if (members.length > 0) {
         getUserGames()
       }
-
-      
-
-      // const ranking = _.filter(newGame, game => {
-      //   return _.find(members, member => member.name === game.name)
-      // })
-
-      // console.log(ranking)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members])
 
   return (
     <section>
-      <h2>Games Ranking</h2>
+      <LastGame totalGames={totalGames} />
+      <h2>Total Games Ranking</h2>
       <div className="scroll-wrap">
         <table className="table">
           <thead>
@@ -194,9 +168,9 @@ const GamesRanking = ({ members }) => {
               <th>마진</th>
             </tr>
           </thead>
-          
+
           <tbody id="rankingContainer">
-          {/* {userGames && userGames.map(game => (<tr><td>1</td></tr>))} */}
+            {/* {userGames && userGames.map(game => (<tr><td>1</td></tr>))} */}
           </tbody>
         </table>
       </div>

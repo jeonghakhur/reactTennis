@@ -85,7 +85,6 @@ const Home = ({ userObj }) => {
     <>
       <div>
         <GamesRanking members={members} />
-
       </div>
       {/* <form onSubmit={onSubmit}>
         <div>

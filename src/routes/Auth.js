@@ -67,7 +67,7 @@ const Auth = () => {
   }
   return (
     <div>
-      <div className="sign-wrap">
+      {/* <div className="sign-wrap">
         <button
           type="button"
           onClick={() => {
@@ -114,7 +114,7 @@ const Auth = () => {
             value={!newAccount ? 'Login' : 'Create Account'}
           />
         </div>
-      </form>
+      </form> */}
       <div>
         <button type="button" onClick={handleGoogleLogin}>
           Google Log in
