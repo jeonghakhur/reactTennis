@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouteMatch } from 'react-router-dom'
-import { db } from '../firebase'
+import { auth, db } from '../firebase'
 import { ref, update, onValue } from 'firebase/database'
 
 const docs = 'reactTennis/games/'
@@ -25,7 +25,6 @@ const gameItemTemplate = `
 const GameDetail = ({ userObj }) => {
   const user = userObj.email ? userObj.email : false
   const admin = user === 'jeonghak.hur@gmail.com' ? true : false
-  console.log(userObj)
   const match = useRouteMatch()
   const gameId = match.params.name
   // const [loadData, setLoadData] = useState()
@@ -167,13 +166,14 @@ const GameDetail = ({ userObj }) => {
         ...game,
         player: [...newPlayer],
         score: [...newScore],
-        final: final ? true : false,
-        writer: user,
       }
     })
 
     update(ref(db, `${docs}${gameId}`), {
       games: newArray,
+      final: final ? true : false,
+      write: user,
+      saveTime: new Date().getTime(),
     }).then(() => {
       if (lastFocus) {
         document.querySelector(`#${lastFocus}`).focus()

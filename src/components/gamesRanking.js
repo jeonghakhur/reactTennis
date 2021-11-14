@@ -9,11 +9,13 @@ const DOC_GAME = 'reactTennis/games'
 const GamesRanking = ({ members }) => {
   // const [games, setGames] = useState([])
   const [totalGames, setTotalGames] = useState([])
+  const [lastGames, setLastGames] = useState(false)
   // eslint-disable-next-line no-unused-vars
   const [userGames, setUserGames] = useState(false)
 
   const getGames = (data) => {
     const newArray = []
+    console.log(_.first(_.orderBy(data, 'date', 'desc')))
     data.forEach((data) => {
       if (!data.games) return
       data.games.forEach((games) => {
@@ -22,6 +24,7 @@ const GamesRanking = ({ members }) => {
         }
       })
     })
+
     setTotalGames(newArray)
   }
 
