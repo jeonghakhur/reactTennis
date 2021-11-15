@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouteMatch } from 'react-router-dom'
-import { auth, db } from '../firebase'
+import { db } from '../firebase'
 import { ref, update, onValue } from 'firebase/database'
 
 const docs = 'reactTennis/games/'

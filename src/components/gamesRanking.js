@@ -9,7 +9,7 @@ const DOC_GAME = 'reactTennis/games'
 const GamesRanking = ({ members }) => {
   // const [games, setGames] = useState([])
   const [totalGames, setTotalGames] = useState([])
-  const [lastGames, setLastGames] = useState(false)
+  // const [lastGames, setLastGames] = useState(false)
   // eslint-disable-next-line no-unused-vars
   const [userGames, setUserGames] = useState(false)
 
