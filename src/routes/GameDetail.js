@@ -33,7 +33,6 @@ const GameDetail = ({ userObj }) => {
   // const [isInit, setIsInit] = useState(false)
 
   const init = (data) => {
-    console.log('init', data)
     const { date, court, moveTime, games } = data
     const dateArr = date.split('-')
 
@@ -183,10 +182,11 @@ const GameDetail = ({ userObj }) => {
   }
 
   useEffect(() => {
-    console.log('effect')
     onValue(ref(db, `${docs}${gameId}`), (snapshot) => {
       init(snapshot.val())
     })
+
+    // return () => onValue()
 
     // readData()
     // setElement()
@@ -221,11 +221,14 @@ const GameDetail = ({ userObj }) => {
           </table>
         </div>
         <div className="btn-wrap floating">
-          <input
-            type="submit"
-            value="임시 저장"
-            className="btn btn-secondary"
-          />
+          {user && (
+            <input
+              type="submit"
+              value="임시 저장"
+              className="btn btn-secondary"
+            />
+          )}
+
           {admin && (
             <input
               button="butotn"

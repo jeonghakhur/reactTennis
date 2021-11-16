@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db } from '../firebase'
-import { ref, push, set, onValue } from 'firebase/database'
+import { ref, onValue } from 'firebase/database'
 import GameRanking from '../components/GameRanking'
 import GameResult from '../components/GameResult'
 import _ from 'lodash'
@@ -8,7 +8,7 @@ import _ from 'lodash'
 const DOC_GAME = 'reactTennis/games'
 
 const Home = ({ userObj }) => {
-  const [lastGame, setLastGame] = useState([])
+  const [, setLastGame] = useState([])
   const [totalGame, setTotalGame] = useState(false)
 
   const setData = data => {

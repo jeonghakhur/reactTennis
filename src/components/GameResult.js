@@ -4,6 +4,8 @@ import _ from 'lodash'
 const GameResult = (props) => {
   const { data } = props
   const [gameResult, setGameResult] = useState([])
+  const [type, setType] = useState(false)
+  // const [t]
 
   const init = (data) => {
     const newArray = _.map(data, (val) => ({
@@ -14,24 +16,56 @@ const GameResult = (props) => {
     setGameResult(newArray)
   }
 
-  const handleClickPlayer = (player) => {
+  const handleClickPlayer = (name) => {
     const newArray = []
-    _.each(data, val => {
-      const games = _.filter(val.games, game => game.player.indexOf('허정학') !== -1 && game.player.indexOf('장지훈') !== -1)
-      if (games.length > 0) {
-        _.each(games, game => {
+    _.each(data, (val) => {
+      const games = _.filter(
+        val.games,
+        // (game) => game.player.indexOf(player[0]) !== -1 || game.player.indexOf(player[1]) !== -1
+        (game) => {
+          let flag = false
+          for (let i = 0; i < name.length; i += 1) {
+            if (game.player.indexOf(name[i]) === -1) {
+              return
+            } else {
+              flag = true
+            }
+          }
+          if (flag) {
+            return game
+          }
+        }
+      )
 
-          console.log('허정학', game.player.indexOf('허정학'))
-          console.log('장지훈', game.player.indexOf('장지훈'))
+      if (games.length > 0) {
+        let pair = false
+        const obj = {}
+        _.each(games, (game) => {
+          
+          const indexA = game.player.indexOf(name[0])
+          const indexB = game.player.indexOf(name[1])
+
+          if ((indexA === 0 && indexB === 1) || (indexA === 1 && indexB === 0) || (indexA === 2 && indexB === 3) || (indexA === 3 && indexB === 2)) {
+            pair = true
+          } else {
+            pair = false
+          }
+          console.log(pair, indexA, indexB)
         })
         newArray.push({
           ...val,
-          games
+          games,
         })
       }
     })
-
     console.log(newArray)
+    setType(true)
+
+    // document.querySelector('body').appendChild(<Modal />)
+
+    setGameResult(newArray)
+
+    // console.log(newArray)
   }
 
   const Games = ({ games }) => {
@@ -82,6 +116,11 @@ const GameResult = (props) => {
     )
   }
 
+  const handleClickBack = () => {
+    init(data)
+    setType(false)
+  }
+
   useEffect(() => {
     init(data)
   }, [data])
@@ -99,6 +138,14 @@ const GameResult = (props) => {
           </div>
         )
       })}
+
+      {type && (
+        <div className="btn-wrap floating">
+          <button type="button" className="btn btn-secondary" onClick={handleClickBack}>
+            돌아가기
+          </button>
+        </div>
+      )}
     </div>
   )
 }
