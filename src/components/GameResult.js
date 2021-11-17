@@ -5,6 +5,8 @@ const GameResult = (props) => {
   const { data } = props
   const [gameResult, setGameResult] = useState([])
   const [type, setType] = useState(false)
+  const [pairvalue, setPairValue] = useState(1)
+  const [pairName, setPairName] = useState('')
   // const [t]
 
   const init = (data) => {
@@ -16,7 +18,10 @@ const GameResult = (props) => {
     setGameResult(newArray)
   }
 
-  const handleClickPlayer = (name) => {
+  const handleClickPlayer = (name, type) => {
+    type = Number(type)
+    // console.log(name, data, type)
+    setPairName(name.join(','))
     const newArray = []
     _.each(data, (val) => {
       const games = _.filter(
@@ -38,34 +43,31 @@ const GameResult = (props) => {
       )
 
       if (games.length > 0) {
-        let pair = false
-        const obj = {}
-        _.each(games, (game) => {
+        const newGames = []
+        for(let i = 0; i < games.length; i += 1) {
+          const indexA = games[i].player.indexOf(name[0])
+          const indexB = games[i].player.indexOf(name[1])
           
-          const indexA = game.player.indexOf(name[0])
-          const indexB = game.player.indexOf(name[1])
-
           if ((indexA === 0 && indexB === 1) || (indexA === 1 && indexB === 0) || (indexA === 2 && indexB === 3) || (indexA === 3 && indexB === 2)) {
-            pair = true
+            if (type === 1 || type === 2) newGames.push(games[i])
+            // return
           } else {
-            pair = false
+            if (type === 1 || type === 3) newGames.push(games[i])
           }
-          console.log(pair, indexA, indexB)
-        })
-        newArray.push({
-          ...val,
-          games,
-        })
+        }
+
+        if (newGames.length > 0) {
+          newArray.push({
+            ...val,
+            games: newGames
+          })
+        }
       }
     })
-    console.log(newArray)
+
     setType(true)
-
-    // document.querySelector('body').appendChild(<Modal />)
-
     setGameResult(newArray)
-
-    // console.log(newArray)
+    setPairValue(type)
   }
 
   const Games = ({ games }) => {
@@ -97,13 +99,15 @@ const GameResult = (props) => {
                   <td>{hourMinute}</td>
                   <td
                     onClick={() => {
-                      handleClickPlayer([player[0], player[1]])
+                      handleClickPlayer([player[0], player[1]], 1)
                     }}
                   >
                     {player[0]},{player[1]}
                     <span>({score[0]})</span>
                   </td>
-                  <td>
+                  <td onClick={() => {
+                      handleClickPlayer([player[2], player[3]], 1)
+                    }}>
                     {player[2]},{player[3]}
                     <span>({score[1]})</span>
                   </td>
@@ -121,12 +125,29 @@ const GameResult = (props) => {
     setType(false)
   }
 
+  const handleChangeResult = (e) => {
+    const value = e.target.value
+    handleClickPlayer(pairName.split(','), value)
+  }
+
   useEffect(() => {
     init(data)
   }, [data])
 
   return (
+    
     <div>
+      {type && (
+        <div className="pair-result-header">
+          <h3><b>{pairName}</b>님과 함께한 게임 결과</h3>
+          <select onChange={handleChangeResult} value={pairvalue}>
+            <option value="1">전체 보기</option>
+            <option value="2">같은 페어일 경우</option>
+            <option value="3">다른 페어일 경우</option>
+          </select>
+          
+        </div>
+      )}
       {gameResult.map((data) => {
         const { key, date, name, games } = data
         return (

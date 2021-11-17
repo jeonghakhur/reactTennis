@@ -8,34 +8,33 @@ import Schedule from '../routes/Schedule'
 import ScheduleDetail from '../routes/ScheduleDetail'
 import Game from '../routes/Game'
 import GameDetail from '../routes/GameDetail'
+import TotalGame from '../routes/TotalGame'
 
 const AppRouter = ({ isLoggedIn, userObj }) => {
   return (
     <Router>
       <Navigation isLoggedIn={isLoggedIn} userObj={userObj} />
       <Switch>
-        <Route exact path="/">
-          <Home userObj={userObj} />
+        {/* <Route path="/games/:name">
+          <GameDetail userObj={userObj} />
         </Route>
-        <Route exact path="/auth">
-          <Auth />
+        <Route past="/games">
+          <Game userObj={userObj} />
         </Route>
         <Route path="/schedule/:name">
           <ScheduleDetail />
         </Route>
         <Route path="/schedule">
           <Schedule />
-        </Route>
-        <Route path="/games/:name">
-          <GameDetail userObj={userObj}/>
-        </Route>
-        <Route past="/games" >
-          <Game userObj={userObj} />
-        </Route>
-
-        <Route path="/profile">
+        </Route> */}
+        {/* <Route past="/totalGame" component={TotalGame} /> */}
+        {/* <Route exact path="/auth">
+          <Auth />
+        </Route> */}
+        <Route exact path="/" component={Home} userObj={userObj} />
+        {/* <Route path="/profile">
           <Profile />
-        </Route>
+        </Route> */}
       </Switch>
     </Router>
   )

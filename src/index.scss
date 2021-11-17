@@ -27,12 +27,18 @@ h2 {
 }
 
 .ly-container {
-  // overflow: hidden;
   padding: 0 1rem 6rem;
-  // position: fixed;
-  // width: 100%;
-  // overflow: hidden;
-  // transform: translate3d(0,0,0); -webkit-transform: translateZ(0);
+}
+
+.header-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  a {
+    display: inline-block;
+    
+  }
 }
 
 .sign-wrap .isChecked {
