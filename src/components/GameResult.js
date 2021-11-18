@@ -5,8 +5,14 @@ const GameResult = (props) => {
   const { data } = props
   const [gameResult, setGameResult] = useState([])
   const [type, setType] = useState(false)
-  const [pairvalue, setPairValue] = useState(1)
+  const [pairType, setPairType] = useState(1)
+  const [resultType, setResultType] = useState(1)
   const [pairName, setPairName] = useState('')
+  const [count, setCount] = useState({
+    win: 0,
+    lose: 0,
+    tie: 0,
+  })
   // const [t]
 
   const init = (data) => {
@@ -18,10 +24,11 @@ const GameResult = (props) => {
     setGameResult(newArray)
   }
 
-  const handleClickPlayer = (name, type) => {
-    type = Number(type)
-    // console.log(name, data, type)
-    setPairName(name.join(','))
+  const handleClickPlayer = (name, typePair = 1, typeResult = 1) => {
+    setCount({win: 0, lose: 0, tie: 0})
+    setPairName(name)
+    setPairType(typePair)
+    setResultType(typeResult)
     const newArray = []
     _.each(data, (val) => {
       const games = _.filter(
@@ -41,33 +48,80 @@ const GameResult = (props) => {
           }
         }
       )
-
       if (games.length > 0) {
-        const newGames = []
-        for(let i = 0; i < games.length; i += 1) {
+        const pairGames = []
+        for (let i = 0; i < games.length; i += 1) {
           const indexA = games[i].player.indexOf(name[0])
           const indexB = games[i].player.indexOf(name[1])
+          let result = ''
+          const {score} = games[i]
           
-          if ((indexA === 0 && indexB === 1) || (indexA === 1 && indexB === 0) || (indexA === 2 && indexB === 3) || (indexA === 3 && indexB === 2)) {
-            if (type === 1 || type === 2) newGames.push(games[i])
+          if (indexA < 2) {
+            if (score[0] > score[1]) {
+              result = 'win'
+            } else if (score[0] === score[1]) {
+              result = 'tie'
+            } else {
+              result = 'lose'
+            }
+          } else {
+            if (score[0] < score[1]) {
+              result = 'win'
+            } else if (score[0] === score[1]) {
+              result = 'tie'
+            } else {
+              result = 'lose'
+            }
+          }
+
+          games[i].result = result
+
+          if (
+            (indexA === 0 && indexB === 1) ||
+            (indexA === 1 && indexB === 0) ||
+            (indexA === 2 && indexB === 3) ||
+            (indexA === 3 && indexB === 2)
+          ) {
+            if (typePair === 1 || typePair === 2) pairGames.push(games[i])
             // return
           } else {
-            if (type === 1 || type === 3) newGames.push(games[i])
+            if (typePair === 1 || typePair === 3) pairGames.push(games[i])
           }
+
         }
 
-        if (newGames.length > 0) {
-          newArray.push({
-            ...val,
-            games: newGames
+        if (pairGames.length > 0) {
+          setCount(pre => ({
+            ...pre,
+            win: pre.win + _.size(_.filter(pairGames, {'result': 'win'})),
+            lose: pre.lose + _.size(_.filter(pairGames, {'result': 'lose'})),
+            tie: pre.tie + _.size(_.filter(pairGames, {'result': 'tie'})),
+          }))
+
+          const resultGames = _.filter(pairGames, game => {
+            if (typeResult === 1) {
+              return game
+            } else if (typeResult === 2) {
+              return game.result === 'win'
+            } else if (typeResult === 3) {
+              return game.result === 'lose'
+            } else if (typeResult === 4) {
+              return game.result === 'tie'
+            }
           })
+
+          if (resultGames.length > 0) {
+            newArray.push({
+              ...val,
+              games: resultGames,
+            })
+          }
         }
       }
     })
 
     setType(true)
     setGameResult(newArray)
-    setPairValue(type)
   }
 
   const Games = ({ games }) => {
@@ -98,6 +152,7 @@ const GameResult = (props) => {
                   <td>{number}</td>
                   <td>{hourMinute}</td>
                   <td
+                    className="pair"
                     onClick={() => {
                       handleClickPlayer([player[0], player[1]], 1)
                     }}
@@ -105,9 +160,12 @@ const GameResult = (props) => {
                     {player[0]},{player[1]}
                     <span>({score[0]})</span>
                   </td>
-                  <td onClick={() => {
+                  <td
+                    className="pair"
+                    onClick={() => {
                       handleClickPlayer([player[2], player[3]], 1)
-                    }}>
+                    }}
+                  >
                     {player[2]},{player[3]}
                     <span>({score[1]})</span>
                   </td>
@@ -125,9 +183,18 @@ const GameResult = (props) => {
     setType(false)
   }
 
-  const handleChangeResult = (e) => {
-    const value = e.target.value
-    handleClickPlayer(pairName.split(','), value)
+  const handleChangePairType = (e) => {
+    const value = Number(e.target.value)
+    handleClickPlayer(pairName, value, resultType)
+  }
+
+  const handleChangeResultType = (e) => {
+    const value = Number(e.target.value)
+    handleClickPlayer(pairName, pairType, value)
+  }
+
+  const handleClickPairChagne = () => {
+    handleClickPlayer(pairName.reverse(), 1)
   }
 
   useEffect(() => {
@@ -135,17 +202,23 @@ const GameResult = (props) => {
   }, [data])
 
   return (
-    
-    <div>
+    <div className="game-result">
       {type && (
-        <div className="pair-result-header">
-          <h3><b>{pairName}</b>님과 함께한 게임 결과</h3>
-          <select onChange={handleChangeResult} value={pairvalue}>
+        <div className="header">
+          <h3>
+            <b onClick={handleClickPairChagne}>{pairName[0]}님이 {pairName[1]}님</b>과 함께한 게임 결과 {count.win} 승 {count.tie} 무 {count.lose} 패
+          </h3>
+          <select onChange={handleChangePairType} value={pairType}>
             <option value="1">전체 보기</option>
-            <option value="2">같은 페어일 경우</option>
-            <option value="3">다른 페어일 경우</option>
+            <option value="2">같은 페어</option>
+            <option value="3">다른 페어</option>
           </select>
-          
+          <select onChange={handleChangeResultType}>
+            <option value="1">전체</option>
+            <option value="2">승</option>
+            <option value="3">패</option>
+            <option value="4">무</option>
+          </select>
         </div>
       )}
       {gameResult.map((data) => {
@@ -162,7 +235,11 @@ const GameResult = (props) => {
 
       {type && (
         <div className="btn-wrap floating">
-          <button type="button" className="btn btn-secondary" onClick={handleClickBack}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleClickBack}
+          >
             돌아가기
           </button>
         </div>

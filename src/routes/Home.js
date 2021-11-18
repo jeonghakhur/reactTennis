@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import {Link} from 'react-router-dom'
 import { db } from '../firebase'
 import { ref, onValue } from 'firebase/database'
-import GameRanking from '../components/GameRanking'
+// import GamesRanking from '../components/GameRanking'
 import GameResult from '../components/GameResult'
 import _ from 'lodash'
+import LastGame from '../components/LastGame'
 
 const DOC_GAME = 'reactTennis/games'
 
@@ -38,10 +39,16 @@ const Home = ({ userObj }) => {
   // console.clear()
   return (
     <div>
-      <GameRanking />
+      <LastGame data={lastGame} />
       <div className="header-wrap">
         <h2>최근게임결과</h2>
-        <Link to="/totalGame" data={totalGame}>전체게임결과보기</Link>
+        <Link to={{
+          pathname: '/totalGame',
+          state: {
+            totalGame
+          }
+          
+        }}>전체게임결과보기</Link>
       </div>
       <GameResult data={lastGame} />
     </div>

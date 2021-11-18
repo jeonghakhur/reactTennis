@@ -96,6 +96,9 @@ input[type='date'],
 input[type='phone'],
 input[type='number'],
 button[type='button'] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   border: 1px solid gray;
   border-radius: .25rem;
   background-color: white;
@@ -112,15 +115,15 @@ input[type='number']::-webkit-inner-spin-button {
 input,
 select,
 button {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
   font-size: .75rem;
   height: 1.5rem;
   vertical-align: top;
 }
 
 button {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   white-space: nowrap;
 }
 
@@ -135,6 +138,34 @@ button {
 
 .game-detail input {
   text-align: center;
+}
+
+.game-result .header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.game-result .header h3 {
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: normal;
+}
+
+.game-result .header b {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  -webkit-text-decoration-color: #253858;
+          text-decoration-color: #253858;
+  color: #2684ff;
+}
+
+.game-result .pair {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .btn-wrap {

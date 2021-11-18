@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { db } from '../firebase'
-import { onValue, query, ref, limitToLast } from 'firebase/database'
 import _ from 'lodash'
 
-const DOC_GAME = 'reactTennis/games'
-
-const LastGame = ({ totalGames }) => {
+const LastGame = ({ data }) => {
   const [games, setGames] = useState([])
   const [court, setCourt] = useState(false)
   const [ranking, setRanking] = useState()
 
   const init = (data) => {
+    const newArray = _.map(data, (val) => ({
+      ...val,
+      games: _.filter(val.games, (game) => game.player[0] !== ''),
+    }))
+
     setCourt({
       date: data.date,
       name: data.name,
@@ -125,15 +126,7 @@ const LastGame = ({ totalGames }) => {
   }
 
   useEffect(() => {
-    onValue(query(ref(db, DOC_GAME), limitToLast(1)), (snapshot) => {
-      if (snapshot.exists()) {
-        snapshot.forEach((child) => {
-          init(child.val())
-        })
-      } else {
-        console.log('not data')
-      }
-    })
+    init(data)
 
     // console.log(totalGames)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,63 +183,6 @@ const LastGame = ({ totalGames }) => {
                     <td>{pointWin}</td>
                     <td>{pointLose}</td>
                     <td>{pointDiff}</td>
-                  </tr>
-                )
-              })}
-          </tbody>
-        </table>
-      </div>
-      <h3>
-        {court.date} {court.name} 게임 결과
-      </h3>
-      <div className="scroll-wrap">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>번호</th>
-              <th>코트</th>
-              <th>시간</th>
-              <th>페어1</th>
-              <th>페어2</th>
-            </tr>
-          </thead>
-          <tbody>
-            {games &&
-              games.map((game, idx) => {
-                const { number, startTime, player, score } = game
-                const renderScore = (val) => <span>({val})</span>
-                const pairA = `${player[0]}, ${player[1]}`
-                const pairB = `${player[2]}, ${player[3]}`
-
-                let pairAClassName = ''
-                let pairBClassName = ''
-                if (score[0] > score[1]) {
-                  pairAClassName = 'win'
-                } else if (score[0] === score[1]) {
-                  pairAClassName = 'tie'
-                } else {
-                  pairAClassName = 'lose'
-                }
-                if (score[0] < score[1]) {
-                  pairBClassName = 'win'
-                } else if (score[0] === score[1]) {
-                  pairBClassName = 'tie'
-                } else {
-                  pairBClassName = 'lose'
-                }
-                return (
-                  <tr key={game.id}>
-                    <td>{idx + 1}</td>
-                    <td>{number}</td>
-                    <td>{startTime}</td>
-                    <td className={pairAClassName}>
-                      {pairA}
-                      {renderScore(score[0])}
-                    </td>
-                    <td className={pairBClassName}>
-                      {pairB}
-                      {renderScore(score[1])}
-                    </td>
                   </tr>
                 )
               })}
