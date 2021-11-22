@@ -22,6 +22,11 @@ h2 {
   font-size: 1.25rem;
 }
 
+a {
+  color: black;
+  text-underline-offset: 3px;
+}
+
 .ly-container {
   padding: 0 1rem 6rem;
 }
@@ -68,10 +73,11 @@ h2 {
   border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   white-space: nowrap;
-  padding: .5rem .3rem;
-  font-size: .75rem;
+  padding: 0.5rem 0.3rem;
+  font-size: 0.75rem;
 }
 
 .table th {
@@ -85,7 +91,7 @@ h2 {
 }
 
 .table td {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #d9d9d9;
   text-align: center;
 }
 
@@ -100,10 +106,10 @@ button[type='button'] {
      -moz-appearance: none;
           appearance: none;
   border: 1px solid gray;
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   background-color: white;
   margin: 0;
-  padding: 0 .25rem;
+  padding: 0 0.25rem;
 }
 
 input[type='number']::-webkit-outer-spin-button,
@@ -115,7 +121,7 @@ input[type='number']::-webkit-inner-spin-button {
 input,
 select,
 button {
-  font-size: .75rem;
+  font-size: 0.75rem;
   height: 1.5rem;
   vertical-align: top;
 }
@@ -141,38 +147,36 @@ button {
 }
 
 .game-result .header {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  margin: 0.5rem 0;
 }
 
-.game-result .header h3 {
-  font-size: 0.875rem;
+.game-result .date-name {
   margin: 0;
-  font-weight: normal;
+  font-size: 0.9rem;
 }
 
-.game-result .header b {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  -webkit-text-decoration-color: #253858;
-          text-decoration-color: #253858;
-  color: #2684ff;
+.game-result .count {
+  margin: 0;
+  font-size: 0.8rem;
 }
 
-.game-result .pair {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.game-result .win {
+  background-color: #e1edfc;
+}
+
+.game-result .lose {
+  background-color: #feeddd;
+}
+
+.game-result .tie {
+  background-color: #ededed;
 }
 
 .btn-wrap {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: 0 -.5rem;
+  margin: 0 -0.5rem;
 }
 
 .btn-wrap.floating {
@@ -190,9 +194,9 @@ button {
           flex: 1;
   font-weight: bold;
   border-width: 0;
-  border-radius: .75rem;
+  border-radius: 0.75rem;
   height: 3rem;
-  margin: 0 .5rem;
+  margin: 0 0.5rem;
   width: 100%;
 }
 
@@ -217,7 +221,7 @@ button {
           align-items: center;
   height: 2rem;
   margin: 1rem 0;
-  border-radius: .75rem;
+  border-radius: 0.75rem;
 }
 
 .top-nav ul {
@@ -242,7 +246,7 @@ button {
   width: 1px;
   height: 70%;
   background-color: black;
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .top-nav li:first-child::before {
@@ -261,12 +265,12 @@ button {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
 }
 
 .row > input {
   width: 100%;
-  margin: 0 .25rem;
+  margin: 0 0.25rem;
 }
 
 .court-wrap [name='gameDate'] {
@@ -283,7 +287,7 @@ button {
   width: 50px;
 }
 
-.court-wrap [name="courtNumber"] {
+.court-wrap [name='courtNumber'] {
   width: 25%;
   text-align: center;
 }

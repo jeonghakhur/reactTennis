@@ -43,29 +43,36 @@ const Home = ({ userObj }) => {
     }
   }, [])
 
-  // console.clear()
-  return (
-    <div>
-      <h2>최근게임순위</h2>
-      <GameRanking data={lastGame} type="lastGame" />
-      <div className="header-wrap">
-        <h2>최근게임결과</h2>
-        <Link
-          to={{
-            pathname: '/totalGame',
-            state: {
-              totalGame,
-            },
-          }}
-        >
-          전체게임결과보기
-        </Link>
+  if (lastGame) {
+    return (
+      <div>
+        <h2>최근게임순위</h2>
+        <GameRanking data={lastGame} type="lastGame" />
+        <div className="header-wrap">
+          <h2>최근게임결과</h2>
+          <Link
+            to={{
+              pathname: '/totalGame',
+              state: {
+                totalGame,
+              },
+            }}
+          >
+            전체게임결과보기
+          </Link>
+        </div>
+        <GameResult data={lastGame} />
+        <h3>전체게임순위</h3>
+        <GameRanking data={totalGame} type="totalGame" />
       </div>
-      <GameResult data={lastGame} />
-      <h3>전체게임순위</h3>
-      <GameRanking data={totalGame} type="totalGame" />
-    </div>
-  )
+    ) 
+  } else {
+    return (
+      <div>Loading...</div>
+    )
+  }
+  // console.clear()
+
 }
 
 export default Home

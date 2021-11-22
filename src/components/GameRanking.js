@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import _ from 'lodash'
 
 const GameRanking = ({ data }) => {
+  const [lastGame, setLastGame] = useState(false)
   const [userRanking, setUserRanking] = useState(false)
   // console.clear()
   let gamsArray = []
@@ -152,6 +153,13 @@ const GameRanking = ({ data }) => {
   const init = (data) => {
     if (!data) return
 
+    if (data.length === 1) {
+      setLastGame({
+        date: data[0].date,
+        name: data[0].name
+      })
+    }
+
     data.forEach((val) => {
       val.games.forEach((game) => {
         if (game.player[0] !== '') {
@@ -171,7 +179,12 @@ const GameRanking = ({ data }) => {
   }, [data])
 
   return (
-    <div>
+    <div className="game-result">
+      {lastGame && (
+        <div className="header">
+          <p className="date-name">{lastGame.date} {lastGame.name}</p>
+        </div>
+      )}
       {userRanking && (
         <div className="scroll-wrap">
           <table className="table">
