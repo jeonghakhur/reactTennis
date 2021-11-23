@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouteMatch } from 'react-router-dom'
 import { db } from '../firebase'
 import { ref, update, onValue } from 'firebase/database'
+import _ from 'lodash'
 
 const docs = 'reactTennis/games/'
 const gameItemTemplate = `
@@ -30,6 +31,7 @@ const GameDetail = ({ userObj }) => {
   // const [loadData, setLoadData] = useState()
   let lastFocus = false
   const [saveGames, setSaveGames] = useState()
+  const [members, setMembers] = useState(false)
   // const [isInit, setIsInit] = useState(false)
 
   const init = (data) => {
@@ -188,11 +190,56 @@ const GameDetail = ({ userObj }) => {
       init(snapshot.val())
     })
 
-    // readData()
+    onValue(ref(db, '/reactTennis/members/'), (snapshot) => {
+      const newArray = []
+      if (snapshot.exists()) {
+        snapshot.forEach((child) => {
+          newArray.push(child.val())
+        })
+      }
+      setMembers(newArray)
+    })
     // setElement()
     // readData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const Select = ({ name, len, step, value }) => {
+    let label = false
+    const options = Array.from({ length: len }, (v, i) => {
+      if (typeof step === 'number') {
+        label = i * step
+        label = label < 10 ? '0' + label : label
+      }
+
+      return {
+        key: i,
+        label,
+      }
+    })
+
+    return (
+      <select name={name} defaultValue={value}>
+        {options.map((option) => (
+          <option key={option.key} value={option.key}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    )
+  }
+
+  const handleClickDelMember = (e) => {
+    const memberRow = document.querySelectorAll('#memberTable tbody tr')
+    const parent = e.target.closest('tr')
+    const index = _.findIndex(memberRow, row => row === parent)
+
+    setMembers(members.filter((member, idx) => idx !== index))
+  }
+
+  const handleClickAddMember = (e) => {
+    // document.querySelector
+  }
 
   return (
     <div className="game-detail">
@@ -240,6 +287,67 @@ const GameDetail = ({ userObj }) => {
           )}
         </div>
       </form>
+
+      <table className="table" id="memberTable">
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>참석자</th>
+            <th>시작 시간</th>
+            <th>종료시간</th>
+            <th>참석게임</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {members &&
+            members.map((val, idx) => (
+              <tr key={idx}>
+                <td>{idx + 1}</td>
+                <td>{val.name}</td>
+                <td>
+                  <Select name="startHour" len={24} step={1} value={19} />
+                  <span className="text-div">:</span>
+                  <Select name="startMinute" len={2} step={30} value={0} />
+                </td>
+                <td>
+                  <Select name="endtHour" len={24} step={1} value={19} />
+                  <span className="text-div">:</span>
+                  <Select name="endMinute" len={2} step={30} value={0} />
+                </td>
+                <td className="game-count"></td>
+                <td>
+                  <button type="button" className="" onClick={handleClickDelMember}>
+                    삭제
+                  </button>
+                </td>
+              </tr>
+            ))}
+          <tr>
+            <td>-</td>
+            <td>
+              <input type="text" name="addMember" />
+            </td>
+            <td>
+              <Select name="startHour" len={24} step={1} value={19} />
+              <span className="text-div">:</span>
+              <Select name="startMinute" len={2} step={30} value={0} />
+            </td>
+            <td>
+              <Select name="endtHour" len={24} step={1} value={19} />
+              <span className="text-div">:</span>
+              <Select name="endMinute" len={2} step={30} value={0} />
+            </td>
+            <td className="game-count"></td>
+            <td>
+              <button type="button" className="" onChange={handleClickAddMember}>
+                추가
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -1,57 +1,57 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { auth } from '../firebase'
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  // createUserWithEmailAndPassword,
+  // signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth'
 
 const Auth = () => {
   const history = useHistory()
-  const [inputs, setInputs] = useState({
-    email: '',
-    password: '',
-  })
-  const [newAccount, setNewAccount] = useState(false)
+  // const [inputs, setInputs] = useState({
+  //   email: '',
+  //   password: '',
+  // })
+  // const [newAccount, setNewAccount] = useState(false)
 
-  const { email, password } = inputs
+  // const { email, password } = inputs
 
-  const onChange = (event) => {
-    const { name, value } = event.target
-    setInputs({
-      ...inputs,
-      [name]: value,
-    })
-  }
+  // const onChange = (event) => {
+  //   const { name, value } = event.target
+  //   setInputs({
+  //     ...inputs,
+  //     [name]: value,
+  //   })
+  // }
 
-  const onSubmit = (event) => {
-    event.preventDefault()
-    if (!newAccount) {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          console.log(userCredential, 'login seccess')
-          history.push('/')
-        })
-        .catch((error) => {
-          alert('사용자 정보가 일치하지 않습니다.')
-        })
-    } else {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          console.log(userCredential.user, 'create seccess')
-          history.push('/')
-        })
-        .catch((error) => {
-          console.log(error.code, error.message)
-        })
-    }
-  }
+  // const onSubmit = (event) => {
+  //   event.preventDefault()
+  //   if (!newAccount) {
+  //     signInWithEmailAndPassword(auth, email, password)
+  //       .then((userCredential) => {
+  //         console.log(userCredential, 'login seccess')
+  //         history.push('/')
+  //       })
+  //       .catch((error) => {
+  //         alert('사용자 정보가 일치하지 않습니다.')
+  //       })
+  //   } else {
+  //     createUserWithEmailAndPassword(auth, email, password)
+  //       .then((userCredential) => {
+  //         console.log(userCredential.user, 'create seccess')
+  //         history.push('/')
+  //       })
+  //       .catch((error) => {
+  //         console.log(error.code, error.message)
+  //       })
+  //   }
+  // }
 
-  const toggleAccount = (value) => {
-    setNewAccount(value)
-  }
+  // const toggleAccount = (value) => {
+  //   setNewAccount(value)
+  // }
 
   const googleProvider = new GoogleAuthProvider()
 

@@ -48,7 +48,7 @@ const Home = ({ userObj }) => {
       <div>
         <h2>최근게임순위</h2>
         <GameRanking data={lastGame} type="lastGame" />
-        <div className="header-wrap">
+        <div className="header">
           <h2>최근게임결과</h2>
           <Link
             to={{
