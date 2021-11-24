@@ -24,14 +24,16 @@ const gameItemTemplate = `
   </td>`
 
 const GameDetail = ({ userObj }) => {
-  const user = userObj.email ? userObj.email : false
-  const admin = user === 'jeonghak.hur@gmail.com' ? true : false
+  const user = userObj.email ? userObj.email : true
+  const admin = user === 'jeonghak.hur@gmail.com' ? true : true
   const match = useRouteMatch()
   const gameId = match.params.name
   // const [loadData, setLoadData] = useState()
   let lastFocus = false
   const [saveGames, setSaveGames] = useState()
   const [members, setMembers] = useState(false)
+  const [firstHour, setFirstHour] = useState(false)
+  const [lastHour, setLastHour] = useState(false)
   // const [isInit, setIsInit] = useState(false)
 
   const init = (data) => {
@@ -86,7 +88,47 @@ const GameDetail = ({ userObj }) => {
       newArray.sort((a, b) => a.startTime - b.startTime)
     }
 
+    getMember(court)
     setSaveGames(newArray)
+
+  }
+
+  const getMember = (court) => {
+    let startHour = []
+    let startMinute = []
+    let endHour = []
+    let endMinute = []
+    court.forEach((val) => {
+      startHour.push(val.startHour)
+      startMinute.push(val.startMinute)
+      endHour.push(val.endHour)
+      endMinute.push(val.endMinute)
+    })
+
+    startHour = Math.min(...startHour)
+    startMinute = Math.min(...startMinute)
+    endHour = Math.max(...endHour)
+    endMinute = Math.min(...endMinute)
+
+    setFirstHour(startHour)
+    setLastHour(endHour)
+
+    onValue(ref(db, '/reactTennis/members/'), (snapshot) => {
+      const newArray = []
+      if (snapshot.exists()) {
+        snapshot.forEach((child) => {
+          newArray.push({
+            ...child.val(),
+            startHour,
+            startMinute,
+            endHour,
+            endMinute,
+          })
+        })
+      }
+
+      setMembers(_.sortBy(newArray, ['name']))
+    })
   }
 
   const setElement = (dataArray) => {
@@ -189,37 +231,35 @@ const GameDetail = ({ userObj }) => {
     onValue(ref(db, `${docs}${gameId}`), (snapshot) => {
       init(snapshot.val())
     })
-
-    onValue(ref(db, '/reactTennis/members/'), (snapshot) => {
-      const newArray = []
-      if (snapshot.exists()) {
-        snapshot.forEach((child) => {
-          newArray.push(child.val())
-        })
-      }
-      setMembers(newArray)
-    })
     // setElement()
     // readData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const Select = ({ name, len, step, value }) => {
+  const Select = ({ name, range, step, value, idx }) => {
     let label = false
-    const options = Array.from({ length: len }, (v, i) => {
+    let key = false
+    const len = range[1] - range[0]
+    const options = Array.from({ length: len }, (val, i) => {
       if (typeof step === 'number') {
-        label = i * step
-        label = label < 10 ? '0' + label : label
+        key = (range[0] + i) * step
+        label = key < 10 ? '0' + key : key
       }
 
       return {
-        key: i,
+        key,
         label,
       }
     })
 
     return (
-      <select name={name} defaultValue={value}>
+      <select
+        name={name}
+        onChange={(e) => handleSelectChange(e, idx)}
+        value={value}
+        className="select"
+
+      >
         {options.map((option) => (
           <option key={option.key} value={option.key}>
             {option.label}
@@ -229,15 +269,44 @@ const GameDetail = ({ userObj }) => {
     )
   }
 
+  const handleSelectChange = (e, idx) => {
+    console.clear()
+    const { value, name } = e.target
+    console.log(name, value)
+    setMembers(
+      members.map((val, i) =>
+        i === idx ? { ...val, [name]: Number(value) } : val
+      )
+    )
+  }
+
   const handleClickDelMember = (e) => {
     const memberRow = document.querySelectorAll('#memberTable tbody tr')
     const parent = e.target.closest('tr')
-    const index = _.findIndex(memberRow, row => row === parent)
+    const index = _.findIndex(memberRow, (row) => row === parent)
 
     setMembers(members.filter((member, idx) => idx !== index))
   }
 
   const handleClickAddMember = (e) => {
+    console.clear()
+    const member = document.querySelector('[name="addMember"]')
+    if (!member.value) return
+    const rows = e.target.closest('tr')
+    const gender = rows.querySelector('[name="addGender"]')
+
+    setMembers([
+      ...members,
+      {
+        gender: gender.value,
+        name: member.value,
+        startHour: firstHour,
+        startMinute: 0,
+        endHour: lastHour,
+        endMinute: 0,
+      },
+    ])
+    console.log(members)
     // document.querySelector
   }
 
@@ -276,18 +345,16 @@ const GameDetail = ({ userObj }) => {
             />
           )}
           {admin && (
-            <input
+            <button
               button="butotn"
-              value="최종 저장"
+              // value="최종 저장"
               className="btn btn-primary"
               onClick={(e) => {
                 handleSubmitGame(e, 'final')
-              }}
-            />
+              }}>최종 저장</button>
           )}
         </div>
       </form>
-
       <table className="table" id="memberTable">
         <thead>
           <tr>
@@ -305,20 +372,50 @@ const GameDetail = ({ userObj }) => {
             members.map((val, idx) => (
               <tr key={idx}>
                 <td>{idx + 1}</td>
-                <td>{val.name}</td>
                 <td>
-                  <Select name="startHour" len={24} step={1} value={19} />
-                  <span className="text-div">:</span>
-                  <Select name="startMinute" len={2} step={30} value={0} />
+                  {val.name}({val.gender === 'M' ? '남' : '여'})
                 </td>
                 <td>
-                  <Select name="endtHour" len={24} step={1} value={19} />
+                  <Select
+                    name="startHour"
+                    range={[firstHour, lastHour]}
+                    step={1}
+                    value={val.startHour}
+                    idx={idx}
+                  />
                   <span className="text-div">:</span>
-                  <Select name="endMinute" len={2} step={30} value={0} />
+                  <Select
+                    name="startMinute"
+                    range={[0, 2]}
+                    step={30}
+                    value={val.startMinute}
+    
+                  />
+                </td>
+                <td>
+                  <Select
+                    name="endHour"
+                    range={[firstHour + 1, lastHour + 1]}
+                    step={1}
+                    value={val.endHour}
+                    idx={idx}
+                  />
+                  <span className="text-div">:</span>
+                  <Select
+                    name="endMinute"
+                    range={[0, 2]}
+                    step={30}
+                    value={val.endMinute}
+                    idx={idx}
+                  />
                 </td>
                 <td className="game-count"></td>
                 <td>
-                  <button type="button" className="" onClick={handleClickDelMember}>
+                  <button
+                    type="button"
+                    className=""
+                    onClick={handleClickDelMember}
+                  >
                     삭제
                   </button>
                 </td>
@@ -327,27 +424,26 @@ const GameDetail = ({ userObj }) => {
           <tr>
             <td>-</td>
             <td>
-              <input type="text" name="addMember" />
+              <input
+                type="text"
+                name="addMember"
+                placeholder="이름"
+                className="w-50"
+              />
+              <select name="addGender" title="성별" className="ml-1">
+                <option value="M">남</option>
+                <option value="F">여</option>
+              </select>
             </td>
-            <td>
-              <Select name="startHour" len={24} step={1} value={19} />
-              <span className="text-div">:</span>
-              <Select name="startMinute" len={2} step={30} value={0} />
-            </td>
-            <td>
-              <Select name="endtHour" len={24} step={1} value={19} />
-              <span className="text-div">:</span>
-              <Select name="endMinute" len={2} step={30} value={0} />
-            </td>
-            <td className="game-count"></td>
-            <td>
-              <button type="button" className="" onChange={handleClickAddMember}>
+            <td colSpan="3" className="ta-l">
+              <button type="button" className="btn-small" onClick={handleClickAddMember}>
                 추가
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+
     </div>
   )
 }

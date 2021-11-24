@@ -13,7 +13,8 @@ import {
 // import { Link } from 'react-router-dom'
 
 const Game = ({ userObj }) => {
-  const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : false
+  // const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : false
+  const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : true
   const [court, setCourt] = useState({})
   const [gameList, setGameList] = useState([])
   const gameListRef = ref(db, `reactTennis/games/`)

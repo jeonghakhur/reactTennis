@@ -100,7 +100,6 @@ input[type='date'],
 input[type='phone'],
 input[type='number'],
 button[type='button'] {
-  appearance: none;
   border: 1px solid darken(white, 50%);
   border-radius: 0.25rem;
   background-color: white;
@@ -115,15 +114,24 @@ input[type='number']::-webkit-inner-spin-button {
 input,
 select,
 button {
+  appearance: none;
   font-size: 0.75rem;
   height: 1.5rem;
   vertical-align: top;
 }
 
-button {
-  appearance: none;
+button,
+input[type=submit] {
   white-space: nowrap;
 }
+
+.select {
+  padding: 0 .75rem 0 .25rem;
+  // // background-image: url('data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-caret-down-fill' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>');
+  // background-repeat: no-repeat;
+  // background-size: 1rem 1rem;
+}
+
 
 // game-detail
 .game-detail {
@@ -306,6 +314,20 @@ button {
   }
 }
 
+//util
+// margin
+.ml-1 {
+  margin-left: .25rem;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.ta-l {
+  text-align: left !important;
+}
+
 // .form-col {
 //   display: flex;
 //   padding: 0.25rem 0;
@@ -371,13 +393,13 @@ button {
 //       font-size: .85rem;
 //     }
 
-//     input[type="text"] {
+//     input[type='text'] {
 //       flex: 1;
 //       width: 100%;
 //       margin: 0 .25rem;
 //     }
 
-//     input[type="number"] {
+//     input[type='number'] {
 //       width: 30px;
 //       margin: 0 .25rem;
 //       text-align: center;
