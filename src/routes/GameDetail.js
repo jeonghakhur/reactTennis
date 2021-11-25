@@ -11,16 +11,30 @@ const gameItemTemplate = `
   <td class="court"></td>
   <td class="time"></td>
   <td class="pair">
-    <input type="text" class="player" />
-    <input type="text" class="player" />
+    <select class="select name"></select>
+    <select class="select name"></select>
   </td>
   <td class="pair">
-    <input type="text" class="player" />
-    <input type="text" class="player" />
+    <select class="select name"></select>
+    <select class="select name"></select>
   </td>
   <td class="score">
-    <input type="number" class="score" min="0" max="6" />
-    <input type="number" class="score" min="0" max="6" />
+    <select class="select score">
+      <option>0</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      <option>6</option>
+    </select>
+    <select class="select score">
+      <option>0</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      <option>6</option>
+    </select>
   </td>`
 
 const GameDetail = ({ userObj }) => {
@@ -30,6 +44,7 @@ const GameDetail = ({ userObj }) => {
   const gameId = match.params.name
   // const [loadData, setLoadData] = useState()
   let lastFocus = false
+  const [date, setDate] = useState()
   const [saveGames, setSaveGames] = useState()
   const [members, setMembers] = useState(false)
   const [firstHour, setFirstHour] = useState(false)
@@ -40,6 +55,7 @@ const GameDetail = ({ userObj }) => {
     console.log('init', data)
     const { date, court, moveTime, games } = data
     const dateArr = date.split('-')
+    setDate(dateArr)
 
     let newArray = []
 
@@ -90,7 +106,38 @@ const GameDetail = ({ userObj }) => {
 
     getMember(court)
     setSaveGames(newArray)
+  }
 
+  const optionMember = () => {
+    console.log(saveGames, members)
+
+    saveGames.forEach(game => {
+      const {id, number, startTime, endTime} = game
+
+      for (let i = 0; i < 4; i += 1) {
+        const select = document.querySelector(`#name-${id}-${i}`)
+        console.log(select)
+
+        const newArray = members.filter(member => member.name === '허정학')
+        console.log(newArray)
+        newArray.forEach(val => {
+          const option = document.createElement('option')
+          option.textContent = val.name
+          select.append(option)
+        })
+      }
+      
+    })
+
+    // if (members) {
+    //   const  newMembers = members.filter(val => {
+    //     const st = new Date(date[0], date[1] - 1, date[2], val.startHour, val.startMinute).getTime()
+    //     const et = new Date(date[0], date[1] - 1, date[2], val.endHour, val.endMinute).getTime()
+    //     // if (startHour >= val.startHour && startMinute <= val.startMinute && endHour <= val.endHour && endMinute <= val.endMinute) {
+    //     //   console.log(val.name)
+    //     // }
+    //   })
+    // }
   }
 
   const getMember = (court) => {
@@ -159,7 +206,12 @@ const GameDetail = ({ userObj }) => {
       // head.textContent = `${number}번 코트
       const inputName = item.querySelectorAll('input[type="text"]')
       const inputScore = item.querySelectorAll('input[type="number"]')
+      const select = item.querySelectorAll('select.name')
 
+      select.forEach((el, idx) => {
+        el.id = `name-${id}-${idx}`
+      })
+      // optionMember(startTime, endTime)
       inputName.forEach((el, idx) => {
         el.name = 'name'
         el.id = `name-${id}-${idx}`
@@ -355,6 +407,7 @@ const GameDetail = ({ userObj }) => {
           )}
         </div>
       </form>
+      <div><button type="button" onClick={optionMember}>멤버 세팅</button></div>
       <table className="table" id="memberTable">
         <thead>
           <tr>
@@ -389,7 +442,7 @@ const GameDetail = ({ userObj }) => {
                     range={[0, 2]}
                     step={30}
                     value={val.startMinute}
-    
+                    idx={idx}
                   />
                 </td>
                 <td>
