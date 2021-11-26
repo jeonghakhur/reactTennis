@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouteMatch } from 'react-router-dom'
 import { db } from '../firebase'
 import { ref, update, onValue } from 'firebase/database'
@@ -45,10 +45,12 @@ const GameDetail = ({ userObj }) => {
   // const [loadData, setLoadData] = useState()
   let lastFocus = false
   const [date, setDate] = useState()
-  const [saveGames, setSaveGames] = useState()
-  const [members, setMembers] = useState(false)
   const [firstHour, setFirstHour] = useState(false)
   const [lastHour, setLastHour] = useState(false)
+  const [members, setMembers] = useState(false)
+  const [saveGames, setSaveGames] = useState()
+  const [userInput, setUserInput] = useState(false)
+  
   // const [isInit, setIsInit] = useState(false)
 
   const init = (data) => {
@@ -112,13 +114,22 @@ const GameDetail = ({ userObj }) => {
     console.log(saveGames, members)
 
     saveGames.forEach(game => {
-      const {id, number, startTime, endTime} = game
-
+      const {id, startTime, endTime} = game
+      console.log(id)
       for (let i = 0; i < 4; i += 1) {
         const select = document.querySelector(`#name-${id}-${i}`)
         console.log(select)
 
-        const newArray = members.filter(member => member.name === '허정학')
+        const newArray = members.filter(member => {
+          const memberStartTime = new Date(date[0], date[1] - 1, date[2], member.startHour, member.startMinute).getTime()
+          const memberEndTime= new Date(date[0], date[1] - 1, date[2], member.endHour, member.endMinute).getTime()
+
+          if (member.name === '고전한' && startTime >= memberStartTime && endTime <= memberEndTime) {
+
+            console.log(memberStartTime, memberEndTime)
+            return member
+          }
+        })
         console.log(newArray)
         newArray.forEach(val => {
           const option = document.createElement('option')
@@ -141,6 +152,7 @@ const GameDetail = ({ userObj }) => {
   }
 
   const getMember = (court) => {
+    console.log('getMember')
     let startHour = []
     let startMinute = []
     let endHour = []
@@ -152,10 +164,10 @@ const GameDetail = ({ userObj }) => {
       endMinute.push(val.endMinute)
     })
 
-    startHour = Math.min(...startHour)
-    startMinute = Math.min(...startMinute)
-    endHour = Math.max(...endHour)
-    endMinute = Math.min(...endMinute)
+    startHour = Math.min(... startHour)
+    startMinute = Math.min(... startMinute)
+    endHour = Math.max(... endHour)
+    endMinute = Math.min(... endMinute)
 
     setFirstHour(startHour)
     setLastHour(endHour)
@@ -180,20 +192,21 @@ const GameDetail = ({ userObj }) => {
 
   const setElement = (dataArray) => {
     if (!dataArray) return
+    console.log('setGame')
     const container = document.querySelector('#gameContainer')
     container.innerHTML = ''
     dataArray.forEach((data, dataIndex) => {
       const { id, number, startTime, endTime, player, score } = data
       const startDate = new Date(startTime)
       let startHour = startDate.getHours()
-      startHour = startHour < 10 ? '0' + startHour : startHour
+      startHour = startHour < 10? '0' + startHour : startHour
       let startMinute = startDate.getMinutes()
-      startMinute = startMinute < 10 ? '0' + startMinute : startMinute
+      startMinute = startMinute < 10? '0' + startMinute : startMinute
       const endDate = new Date(endTime)
       let endHour = endDate.getHours()
-      endHour = endHour < 10 ? '0' + endHour : endHour
+      endHour = endHour < 10? '0' + endHour : endHour
       let endMinute = endDate.getMinutes()
-      endMinute = endMinute < 10 ? '0' + endMinute : endMinute
+      endMinute = endMinute < 10? '0' + endMinute : endMinute
       const item = document.createElement('tr')
       item.key = id
       item.classList.add('game-item')
@@ -206,11 +219,11 @@ const GameDetail = ({ userObj }) => {
       // head.textContent = `${number}번 코트
       const inputName = item.querySelectorAll('input[type="text"]')
       const inputScore = item.querySelectorAll('input[type="number"]')
-      const select = item.querySelectorAll('select.name')
+      // const select = item.querySelectorAll('select.name')
 
-      select.forEach((el, idx) => {
-        el.id = `name-${id}-${idx}`
-      })
+      // select.forEach((el, idx) => {
+      //   el.id = `name-${id}-${idx}`
+      // })
       // optionMember(startTime, endTime)
       inputName.forEach((el, idx) => {
         el.name = 'name'
@@ -260,8 +273,8 @@ const GameDetail = ({ userObj }) => {
       })
       return {
         ...game,
-        player: [...newPlayer],
-        score: [...newScore],
+        player: [... newPlayer],
+        score: [... newScore],
       }
     })
 
@@ -295,7 +308,7 @@ const GameDetail = ({ userObj }) => {
     const options = Array.from({ length: len }, (val, i) => {
       if (typeof step === 'number') {
         key = (range[0] + i) * step
-        label = key < 10 ? '0' + key : key
+        label = key < 10? '0' + key : key
       }
 
       return {
@@ -322,23 +335,29 @@ const GameDetail = ({ userObj }) => {
   }
 
   const handleSelectChange = (e, idx) => {
-    console.clear()
+    // console.clear()
     const { value, name } = e.target
     console.log(name, value)
     setMembers(
       members.map((val, i) =>
-        i === idx ? { ...val, [name]: Number(value) } : val
+        i === idx ? { ... val, [name]: Number(value) } : val
       )
     )
   }
 
   const handleClickDelMember = (e) => {
+    console.log('del')
     const memberRow = document.querySelectorAll('#memberTable tbody tr')
     const parent = e.target.closest('tr')
     const index = _.findIndex(memberRow, (row) => row === parent)
-
-    setMembers(members.filter((member, idx) => idx !== index))
+    deleteMember(index)
+    // setMembers(members.filter((member, idx) => idx !== index))
   }
+
+  const deleteMember = useCallback((index) => {
+    console.log(members)
+    setMembers(members.filter((member, idx) => idx !== index))
+  }, [members])
 
   const handleClickAddMember = (e) => {
     console.clear()
@@ -360,6 +379,10 @@ const GameDetail = ({ userObj }) => {
     ])
     console.log(members)
     // document.querySelector
+  }
+
+  const handleInputUser = (e) => {
+    setUserInput(e.target.value)
   }
 
   return (
@@ -415,7 +438,7 @@ const GameDetail = ({ userObj }) => {
             <th>참석자</th>
             <th>시작 시간</th>
             <th>종료시간</th>
-            <th>참석게임</th>
+            <th>참석 게임</th>
             <th>삭제</th>
           </tr>
         </thead>
@@ -482,6 +505,7 @@ const GameDetail = ({ userObj }) => {
                 name="addMember"
                 placeholder="이름"
                 className="w-50"
+                onChange={handleInputUser}
               />
               <select name="addGender" title="성별" className="ml-1">
                 <option value="M">남</option>

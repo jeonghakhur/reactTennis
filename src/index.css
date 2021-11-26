@@ -124,6 +124,7 @@ button {
   font-size: 0.75rem;
   height: 1.5rem;
   vertical-align: top;
+  cursor: pointer;
 }
 
 button,
