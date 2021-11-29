@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouteMatch } from 'react-router-dom'
 import { db } from '../firebase'
 import { ref, update, onValue } from 'firebase/database'
+import CourtList from '../components/CourtList'
 import _ from 'lodash'
 
 const docs = 'reactTennis/games/'
@@ -48,7 +49,7 @@ const GameDetail = ({ userObj }) => {
   const [firstHour, setFirstHour] = useState(false)
   const [lastHour, setLastHour] = useState(false)
   const [members, setMembers] = useState(false)
-  const [saveGames, setSaveGames] = useState()
+  const [saveGames, setSaveGames] = useState(false)
   const [userInput, setUserInput] = useState(false)
   
   // const [isInit, setIsInit] = useState(false)
@@ -190,7 +191,7 @@ const GameDetail = ({ userObj }) => {
     })
   }
 
-  const setElement = (dataArray) => {
+  const setElement = useCallback((dataArray) => {
     if (!dataArray) return
     console.log('setGame')
     const container = document.querySelector('#gameContainer')
@@ -253,7 +254,7 @@ const GameDetail = ({ userObj }) => {
       },
       { capture: true }
     )
-  }
+  }, [saveGames])
 
   const handleSubmitGame = (e, final) => {
     e.preventDefault()
@@ -385,52 +386,14 @@ const GameDetail = ({ userObj }) => {
     setUserInput(e.target.value)
   }
 
+
+  const memberCount = useMemo(() => {
+    console.log('memberCount')
+    return members.length
+  }, [members])
+
   return (
     <div className="game-detail">
-      <form onSubmit={handleSubmitGame}>
-        <div className="scroll-wrap">
-          <table className="table">
-            <colgroup>
-              <col />
-              <col />
-              <col />
-              <col />
-              <col />
-              <col width="20%" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>번호</th>
-                <th>코트</th>
-                <th>사간</th>
-                <th>페어 A</th>
-                <th>페어 B</th>
-                <th>스코어</th>
-              </tr>
-            </thead>
-            <tbody id="gameContainer">{setElement(saveGames)}</tbody>
-          </table>
-        </div>
-        <div className="btn-wrap floating">
-          {user && (
-            <input
-              type="submit"
-              value="임시 저장"
-              className="btn btn-secondary"
-            />
-          )}
-          {admin && (
-            <button
-              button="butotn"
-              // value="최종 저장"
-              className="btn btn-primary"
-              onClick={(e) => {
-                handleSubmitGame(e, 'final')
-              }}>최종 저장</button>
-          )}
-        </div>
-      </form>
-      <div><button type="button" onClick={optionMember}>멤버 세팅</button></div>
       <table className="table" id="memberTable">
         <thead>
           <tr>
@@ -520,6 +483,9 @@ const GameDetail = ({ userObj }) => {
           </tr>
         </tbody>
       </table>
+      <div><button type="button" onClick={optionMember}>멤버 세팅</button>참석 멤머 {memberCount}</div>
+      <CourtList games={saveGames} members={members} date={date} />
+      
 
     </div>
   )
