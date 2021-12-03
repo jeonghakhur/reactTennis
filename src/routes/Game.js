@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { db } from '../firebase'
-import {
-  push,
-  ref,
-  set,
-  onValue,
-  query,
-  orderByChild,
-  remove,
-} from 'firebase/database'
+import { push, ref, set, remove } from 'firebase/database'
 // import { Link } from 'react-router-dom'
 
-const Game = ({ userObj }) => {
+const Game = ({ userObj, totalGames }) => {
   // const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : false
   const auth = userObj.email === 'jeonghak.hur@gmail.com' ? true : true
   const [court, setCourt] = useState({})
@@ -29,20 +21,6 @@ const Game = ({ userObj }) => {
 
   if (date < 10) {
     date = 0 + String(date)
-  }
-
-  const readGame = () => {
-    onValue(query(gameListRef, orderByChild('date')), (snapshot) => {
-      const newArray = []
-      snapshot.forEach((child) => {
-        newArray.push({
-          id: child.key,
-          date: child.val().date,
-          name: child.val().name,
-        })
-      })
-      setGameList(newArray.reverse())
-    })
   }
 
   const [gameDate, setGameDate] = useState(`${year}-${month}-${date}`)
@@ -171,6 +149,7 @@ const Game = ({ userObj }) => {
     if (!Object.keys(data).length) return
     set(newGameListRef, {
       ...data,
+      final: false,
       time: new Date().getTime(),
     })
   }
@@ -182,12 +161,9 @@ const Game = ({ userObj }) => {
   }
 
   useEffect(() => {
-    // console.log(gameData)
-    // saveData()
-    readGame()
-    // setElement()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [court])
+    if (!totalGames) return
+    setGameList(totalGames)
+  }, [totalGames])
 
   //
 

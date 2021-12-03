@@ -1,64 +1,32 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouteMatch } from 'react-router-dom'
 import { db } from '../firebase'
-import { ref, update, onValue } from 'firebase/database'
+import { ref, onValue } from 'firebase/database'
 import CourtList from '../components/CourtList'
 import _ from 'lodash'
 
-const docs = 'reactTennis/games/'
-const gameItemTemplate = `
-  <td class="number">
-  </td>
-  <td class="court"></td>
-  <td class="time"></td>
-  <td class="pair">
-    <select class="select name"></select>
-    <select class="select name"></select>
-  </td>
-  <td class="pair">
-    <select class="select name"></select>
-    <select class="select name"></select>
-  </td>
-  <td class="score">
-    <select class="select score">
-      <option>0</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-      <option>6</option>
-    </select>
-    <select class="select score">
-      <option>0</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-      <option>6</option>
-    </select>
-  </td>`
+// const docs = 'reactTennis/games/'
 
-const GameDetail = ({ userObj }) => {
+const GameDetail = ({ userObj, totalGames }) => {
   const user = userObj.email ? userObj.email : true
+  // eslint-disable-next-line no-unused-vars
   const admin = user === 'jeonghak.hur@gmail.com' ? true : true
   const match = useRouteMatch()
   const gameId = match.params.name
   // const [loadData, setLoadData] = useState()
-  let lastFocus = false
-  const [date, setDate] = useState()
   const [firstHour, setFirstHour] = useState(false)
   const [lastHour, setLastHour] = useState(false)
   const [members, setMembers] = useState(false)
-  const [saveGames, setSaveGames] = useState(false)
+  // const [saveGames, setSaveGames] = useState(false)
+  // eslint-disable-next-line no-unused-vars
   const [userInput, setUserInput] = useState(false)
-  
+
   // const [isInit, setIsInit] = useState(false)
 
   const init = (data) => {
-    console.log('init', data)
+
     const { date, court, moveTime, games } = data
     const dateArr = date.split('-')
-    setDate(dateArr)
 
     let newArray = []
 
@@ -99,6 +67,7 @@ const GameDetail = ({ userObj }) => {
             number,
             startTime: startTime + moveTimestamp * i,
             endTime: startTime + moveTimestamp * i + moveTimestamp,
+            timeOrder: i,
             player: ['', '', '', ''],
             score: ['', ''],
           })
@@ -108,48 +77,11 @@ const GameDetail = ({ userObj }) => {
     }
 
     getMember(court)
-    setSaveGames(newArray)
+    // setSaveGames(newArray)
   }
 
   const optionMember = () => {
-    console.log(saveGames, members)
-
-    saveGames.forEach(game => {
-      const {id, startTime, endTime} = game
-      console.log(id)
-      for (let i = 0; i < 4; i += 1) {
-        const select = document.querySelector(`#name-${id}-${i}`)
-        console.log(select)
-
-        const newArray = members.filter(member => {
-          const memberStartTime = new Date(date[0], date[1] - 1, date[2], member.startHour, member.startMinute).getTime()
-          const memberEndTime= new Date(date[0], date[1] - 1, date[2], member.endHour, member.endMinute).getTime()
-
-          if (member.name === '고전한' && startTime >= memberStartTime && endTime <= memberEndTime) {
-
-            console.log(memberStartTime, memberEndTime)
-            return member
-          }
-        })
-        console.log(newArray)
-        newArray.forEach(val => {
-          const option = document.createElement('option')
-          option.textContent = val.name
-          select.append(option)
-        })
-      }
-      
-    })
-
-    // if (members) {
-    //   const  newMembers = members.filter(val => {
-    //     const st = new Date(date[0], date[1] - 1, date[2], val.startHour, val.startMinute).getTime()
-    //     const et = new Date(date[0], date[1] - 1, date[2], val.endHour, val.endMinute).getTime()
-    //     // if (startHour >= val.startHour && startMinute <= val.startMinute && endHour <= val.endHour && endMinute <= val.endMinute) {
-    //     //   console.log(val.name)
-    //     // }
-    //   })
-    // }
+    console.log('member setting')
   }
 
   const getMember = (court) => {
@@ -165,10 +97,10 @@ const GameDetail = ({ userObj }) => {
       endMinute.push(val.endMinute)
     })
 
-    startHour = Math.min(... startHour)
-    startMinute = Math.min(... startMinute)
-    endHour = Math.max(... endHour)
-    endMinute = Math.min(... endMinute)
+    startHour = Math.min(...startHour)
+    startMinute = Math.min(...startMinute)
+    endHour = Math.max(...endHour)
+    endMinute = Math.min(...endMinute)
 
     setFirstHour(startHour)
     setLastHour(endHour)
@@ -183,6 +115,7 @@ const GameDetail = ({ userObj }) => {
             startMinute,
             endHour,
             endMinute,
+            count: [],
           })
         })
       }
@@ -191,116 +124,47 @@ const GameDetail = ({ userObj }) => {
     })
   }
 
-  const setElement = useCallback((dataArray) => {
-    if (!dataArray) return
-    console.log('setGame')
-    const container = document.querySelector('#gameContainer')
-    container.innerHTML = ''
-    dataArray.forEach((data, dataIndex) => {
-      const { id, number, startTime, endTime, player, score } = data
-      const startDate = new Date(startTime)
-      let startHour = startDate.getHours()
-      startHour = startHour < 10? '0' + startHour : startHour
-      let startMinute = startDate.getMinutes()
-      startMinute = startMinute < 10? '0' + startMinute : startMinute
-      const endDate = new Date(endTime)
-      let endHour = endDate.getHours()
-      endHour = endHour < 10? '0' + endHour : endHour
-      let endMinute = endDate.getMinutes()
-      endMinute = endMinute < 10? '0' + endMinute : endMinute
-      const item = document.createElement('tr')
-      item.key = id
-      item.classList.add('game-item')
-      item.innerHTML = gameItemTemplate
-      item.querySelector('.number').textContent = dataIndex + 1
-      item.querySelector('.court').textContent = number
-      item.querySelector(
-        '.time'
-      ).innerHTML = `${startHour}:${startMinute} <br /> ${endHour}:${endMinute}`
-      // head.textContent = `${number}번 코트
-      const inputName = item.querySelectorAll('input[type="text"]')
-      const inputScore = item.querySelectorAll('input[type="number"]')
-      // const select = item.querySelectorAll('select.name')
+  // const handleSubmitGame = (e, final) => {
+  //   e.preventDefault()
 
-      // select.forEach((el, idx) => {
-      //   el.id = `name-${id}-${idx}`
-      // })
-      // optionMember(startTime, endTime)
-      inputName.forEach((el, idx) => {
-        el.name = 'name'
-        el.id = `name-${id}-${idx}`
-        el.dataset.id = 'name-' + id
-        el.dataset.index = idx
-        el.value = player[idx] ? player[idx] : ''
-      })
+  //   const newArray = saveGames.map((game) => {
+  //     const newPlayer = game.player.map((name, idx) => {
+  //       const el = document.querySelector(
+  //         `[data-id="name-${game.id}"][data-index="${idx}"]`
+  //       )
+  //       return name === el.value ? name : el.value
+  //     })
+  //     const newScore = game.score.map((score, idx) => {
+  //       const el = document.querySelector(
+  //         `[data-id="score-${game.id}"][data-index="${idx}"]`
+  //       )
+  //       return score === el.value ? score : el.value
+  //     })
+  //     return {
+  //       ...game,
+  //       player: [... newPlayer],
+  //       score: [... newScore],
+  //     }
+  //   })
 
-      inputScore.forEach((el, idx) => {
-        el.name = 'score'
-        el.id = `score-${id}-${idx}`
-        el.dataset.id = 'score-' + id
-        el.dataset.index = idx
-        el.value = score[idx] ? score[idx] : ''
-      })
-
-      container.append(item)
-    })
-
-    document.querySelector('#gameContainer').addEventListener(
-      'focus',
-      (e) => {
-        if (e.target.tagName === 'INPUT') {
-          lastFocus = e.target.id
-        }
-      },
-      { capture: true }
-    )
-  }, [saveGames])
-
-  const handleSubmitGame = (e, final) => {
-    e.preventDefault()
-
-    const newArray = saveGames.map((game) => {
-      const newPlayer = game.player.map((name, idx) => {
-        const el = document.querySelector(
-          `[data-id="name-${game.id}"][data-index="${idx}"]`
-        )
-        return name === el.value ? name : el.value
-      })
-      const newScore = game.score.map((score, idx) => {
-        const el = document.querySelector(
-          `[data-id="score-${game.id}"][data-index="${idx}"]`
-        )
-        return score === el.value ? score : el.value
-      })
-      return {
-        ...game,
-        player: [... newPlayer],
-        score: [... newScore],
-      }
-    })
-
-    update(ref(db, `${docs}${gameId}`), {
-      games: newArray,
-      final: final ? true : false,
-      write: user,
-      saveTime: new Date().getTime(),
-    }).then(() => {
-      if (lastFocus) {
-        document.querySelector(`#${lastFocus}`).focus()
-      }
-    })
-    //
-  }
+  //   update(ref(db, `${docs}${gameId}`), {
+  //     games: newArray,
+  //     final: final ? true : false,
+  //     write: user,
+  //     saveTime: new Date().getTime(),
+  //   }).then(() => {
+  //     alert('update')
+  //   })
+  //   //
+  // }
 
   useEffect(() => {
-    console.log('effect')
-    onValue(ref(db, `${docs}${gameId}`), (snapshot) => {
-      init(snapshot.val())
-    })
-    // setElement()
-    // readData()
+    if (!totalGames) return
+
+    const selectGame = totalGames.filter((val) => val.id === gameId)
+    init(selectGame[0])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [totalGames])
 
   const Select = ({ name, range, step, value, idx }) => {
     let label = false
@@ -309,7 +173,7 @@ const GameDetail = ({ userObj }) => {
     const options = Array.from({ length: len }, (val, i) => {
       if (typeof step === 'number') {
         key = (range[0] + i) * step
-        label = key < 10? '0' + key : key
+        label = key < 10 ? '0' + key : key
       }
 
       return {
@@ -324,7 +188,6 @@ const GameDetail = ({ userObj }) => {
         onChange={(e) => handleSelectChange(e, idx)}
         value={value}
         className="select"
-
       >
         {options.map((option) => (
           <option key={option.key} value={option.key}>
@@ -341,7 +204,7 @@ const GameDetail = ({ userObj }) => {
     console.log(name, value)
     setMembers(
       members.map((val, i) =>
-        i === idx ? { ... val, [name]: Number(value) } : val
+        i === idx ? { ...val, [name]: Number(value) } : val
       )
     )
   }
@@ -355,13 +218,15 @@ const GameDetail = ({ userObj }) => {
     // setMembers(members.filter((member, idx) => idx !== index))
   }
 
-  const deleteMember = useCallback((index) => {
-    console.log(members)
-    setMembers(members.filter((member, idx) => idx !== index))
-  }, [members])
+  const deleteMember = useCallback(
+    (index) => {
+      console.log(members)
+      setMembers(members.filter((member, idx) => idx !== index))
+    },
+    [members]
+  )
 
   const handleClickAddMember = (e) => {
-    console.clear()
     const member = document.querySelector('[name="addMember"]')
     if (!member.value) return
     const rows = e.target.closest('tr')
@@ -386,9 +251,7 @@ const GameDetail = ({ userObj }) => {
     setUserInput(e.target.value)
   }
 
-
   const memberCount = useMemo(() => {
-    console.log('memberCount')
     return members.length
   }, [members])
 
@@ -476,17 +339,24 @@ const GameDetail = ({ userObj }) => {
               </select>
             </td>
             <td colSpan="3" className="ta-l">
-              <button type="button" className="btn-small" onClick={handleClickAddMember}>
+              <button
+                type="button"
+                className="btn-small"
+                onClick={handleClickAddMember}
+              >
                 추가
               </button>
             </td>
           </tr>
         </tbody>
       </table>
-      <div><button type="button" onClick={optionMember}>멤버 세팅</button>참석 멤머 {memberCount}</div>
-      <CourtList games={saveGames} members={members} date={date} />
-      
-
+      <div>
+        <button type="button" onClick={optionMember}>
+          멤버 세팅
+        </button>
+        참석 멤머 {memberCount}
+      </div>
+      <CourtList gameId={gameId} members={members} totalGames={totalGames} />
     </div>
   )
 }

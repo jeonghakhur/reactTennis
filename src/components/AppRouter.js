@@ -11,22 +11,33 @@ import ScheduleDetail from '../routes/ScheduleDetail'
 import Game from '../routes/Game'
 import GameDetail from '../routes/GameDetail'
 
-const AppRouter = ({ isLoggedIn, userObj }) => {
+const AppRouter = ({ isLoggedIn, userObj, totalGames }) => {
   return (
     <Router>
       <Navigation isLoggedIn={isLoggedIn} userObj={userObj} />
       <Switch>
         <Route
           path="/games/:name"
-          render={() => <GameDetail userObj={userObj} />}
+          render={() => <GameDetail userObj={userObj} totalGames={totalGames} />}
         />
-        <Route path="/games" render={() => <Game userObj={userObj} />} />
+        <Route path="/games" 
+        render={() => <Game userObj={userObj} totalGames={totalGames} />} />
         <Route path="/schedule/:name" component={ScheduleDetail} />
         <Route path="/schedule" component={Schedule} />
-        <Route path="/totalGame/:name" component={TotalGame} />
-        <Route path="/totalGame" component={TotalGame} />
+        <Route
+          path="/totalGame/:name"
+          render={() => <TotalGame totalGames={totalGames} />}
+        />
+        <Route
+          path="/totalGame"
+          render={() => <TotalGame totalGames={totalGames} />}
+        />
         <Route path="/auth" component={Auth} />
-        <Route exact path="/" component={Home} userObj={userObj} />
+        <Route
+          exact
+          path="/"
+          render={() => <Home userObj={userObj} totalGames={totalGames} />}
+        />
         {/* <Route path="/profile">
           <Profile />
         </Route> */}

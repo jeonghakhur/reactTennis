@@ -144,33 +144,21 @@ const GameResult = (props) => {
                 minute < 10 ? '0' + minute : minute
               }`
 
+
+
               return (
-                <tr key={idx} className={result}>
+                <tr key={idx} className={name ? result : ''}>
                   <td>{idx + 1}</td>
                   <td>{number}</td>
                   <td>{hourMinute}</td>
                   <td className="pair">
-                    <Link
-                      to={{
-                        pathname: `/totalGame/${player[0]}-${player[1]}`,
-                        state: {
-                          totalGame: data,
-                        },
-                      }}
-                    >
+                    <Link to={`/totalGame/${player[0]}-${player[1]}`}>
                       {player[0]},{player[1]}
                       <span>({score[0]})</span>
                     </Link>
                   </td>
                   <td className="pair">
-                    <Link
-                      to={{
-                        pathname: `/totalGame/${player[2]}-${player[3]}`,
-                        state: {
-                          totalGame: data,
-                        },
-                      }}
-                    >
+                    <Link to={`/totalGame/${player[2]}-${player[3]}`}>
                       {player[2]},{player[3]}
                       <span>({score[1]})</span>
                     </Link>
