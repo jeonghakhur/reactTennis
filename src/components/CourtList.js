@@ -77,12 +77,12 @@ const CourtList = (props) => {
     
     const myGames = allGames.filter(member => member.indexOf('허정학') !== -1)
 
-    console.log('memo',myGames, members)
+    // console.log('memo',myGames, members)
     return 'a'
   }, [members])
 
  const test = () => {
-   console.log('test', members)
+  //  console.log('test', members)
  }
 
   useEffect(() => {

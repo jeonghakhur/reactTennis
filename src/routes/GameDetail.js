@@ -116,11 +116,53 @@ const GameDetail = ({ userObj, totalGames }) => {
             endHour,
             endMinute,
             count: [],
+            players: []
           })
         })
       }
 
+      newArray.forEach(val => {
+        newArray.forEach(member => {
+          if (val.name !== member.name) {
+            val.players.push({
+              name: member.name
+            })
+          }
+        })
+      })
+      
+      console.clear()
+
+      const allGames = []
+      totalGames.forEach(val => {
+        if (!val.games) return
+        val.games.forEach(game => {
+          allGames.push(game)
+        })
+      })
+
+      newArray.forEach(member => {
+        const {name, players} = member
+        players.forEach(player => {
+          let pair = 0
+          let notPair = 0
+          allGames.forEach(val => {
+            const indexA = val.player.indexOf(name)
+            const indexB = val.player.indexOf(player.name)
+            if (indexA === -1 || indexB === -1) return
+            if ((indexA === 0 & indexB === 1) || (indexA === 1 && indexB === 0) || (indexA === 2 && indexB === 3) || (indexA === 3 && indexB === 2)) {
+              pair += 1
+            } else {
+              notPair += 1
+            }
+          })
+          player.pair = pair
+          player.notPair = notPair
+        })
+      })
+
       setMembers(_.sortBy(newArray, ['name']))
+      console.log(newArray)
     })
   }
 

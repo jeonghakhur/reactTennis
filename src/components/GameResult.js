@@ -190,9 +190,9 @@ const GameResult = (props) => {
         </div>
       )}
       {gameResult.map((data) => {
-        const { key, date, name, games, count } = data
+        const { id, date, name, games, count } = data
         return (
-          <div key={key} className="game-result-item">
+          <div key={id} className="game-result-item">
             <div className="header">
               <p className="date-name">
                 {date} {name}
