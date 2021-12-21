@@ -24,7 +24,6 @@ const GameDetail = ({ userObj, totalGames }) => {
   // const [isInit, setIsInit] = useState(false)
 
   const init = (data) => {
-
     const { date, court, moveTime, games } = data
     const dateArr = date.split('-')
 
@@ -84,6 +83,56 @@ const GameDetail = ({ userObj, totalGames }) => {
     console.log('member setting')
   }
 
+  const setOtherMembers = (members) => {
+    members.forEach((val) => {
+      val.players = []
+      members.forEach((member) => {
+        if (val.name !== member.name) {
+          val.players.push({
+            name: member.name,
+          })
+        }
+      })
+    })
+
+    const allGames = []
+    totalGames.forEach((val) => {
+      if (!val.games) return
+      val.games.forEach((game) => {
+        allGames.push(game)
+      })
+    })
+
+    members.forEach((member) => {
+      const { name, players } = member
+      players.forEach((player) => {
+        let pair = 0
+        let notPair = 0
+        allGames.forEach((val) => {
+          const indexA = val.player.indexOf(name)
+          const indexB = val.player.indexOf(player.name)
+          if (indexA === -1 || indexB === -1) return
+          if (
+            (indexA === 0) & (indexB === 1) ||
+            (indexA === 1 && indexB === 0) ||
+            (indexA === 2 && indexB === 3) ||
+            (indexA === 3 && indexB === 2)
+          ) {
+            pair += 1
+          } else {
+            notPair += 1
+          }
+        })
+        player.pair = pair
+        player.notPair = notPair
+        player.count = 0
+        // player.gender = gender
+      })
+    })
+
+    setMembers(_.sortBy(members, ['name']))
+  }
+
   const getMember = (court) => {
     console.log('getMember')
     let startHour = []
@@ -116,53 +165,12 @@ const GameDetail = ({ userObj, totalGames }) => {
             endHour,
             endMinute,
             count: [],
-            players: []
+            players: [],
           })
         })
       }
 
-      newArray.forEach(val => {
-        newArray.forEach(member => {
-          if (val.name !== member.name) {
-            val.players.push({
-              name: member.name
-            })
-          }
-        })
-      })
-      
-      console.clear()
-
-      const allGames = []
-      totalGames.forEach(val => {
-        if (!val.games) return
-        val.games.forEach(game => {
-          allGames.push(game)
-        })
-      })
-
-      newArray.forEach(member => {
-        const {name, players} = member
-        players.forEach(player => {
-          let pair = 0
-          let notPair = 0
-          allGames.forEach(val => {
-            const indexA = val.player.indexOf(name)
-            const indexB = val.player.indexOf(player.name)
-            if (indexA === -1 || indexB === -1) return
-            if ((indexA === 0 & indexB === 1) || (indexA === 1 && indexB === 0) || (indexA === 2 && indexB === 3) || (indexA === 3 && indexB === 2)) {
-              pair += 1
-            } else {
-              notPair += 1
-            }
-          })
-          player.pair = pair
-          player.notPair = notPair
-        })
-      })
-
-      setMembers(_.sortBy(newArray, ['name']))
-      console.log(newArray)
+      setOtherMembers(newArray)
     })
   }
 
@@ -211,7 +219,8 @@ const GameDetail = ({ userObj, totalGames }) => {
   const Select = ({ name, range, step, value, idx }) => {
     let label = false
     let key = false
-    const len = range[1] - range[0]
+    const len = range[1] + 1 - range[0]
+
     const options = Array.from({ length: len }, (val, i) => {
       if (typeof step === 'number') {
         key = (range[0] + i) * step
@@ -223,6 +232,8 @@ const GameDetail = ({ userObj, totalGames }) => {
         label,
       }
     })
+
+    // console.log(options)
 
     return (
       <select
@@ -243,7 +254,6 @@ const GameDetail = ({ userObj, totalGames }) => {
   const handleSelectChange = (e, idx) => {
     // console.clear()
     const { value, name } = e.target
-    console.log(name, value)
     setMembers(
       members.map((val, i) =>
         i === idx ? { ...val, [name]: Number(value) } : val
@@ -252,21 +262,11 @@ const GameDetail = ({ userObj, totalGames }) => {
   }
 
   const handleClickDelMember = (e) => {
-    console.log('del')
     const memberRow = document.querySelectorAll('#memberTable tbody tr')
     const parent = e.target.closest('tr')
     const index = _.findIndex(memberRow, (row) => row === parent)
-    deleteMember(index)
-    // setMembers(members.filter((member, idx) => idx !== index))
+    setOtherMembers(members.filter((member, idx) => idx !== index))
   }
-
-  const deleteMember = useCallback(
-    (index) => {
-      console.log(members)
-      setMembers(members.filter((member, idx) => idx !== index))
-    },
-    [members]
-  )
 
   const handleClickAddMember = (e) => {
     const member = document.querySelector('[name="addMember"]')
@@ -274,7 +274,7 @@ const GameDetail = ({ userObj, totalGames }) => {
     const rows = e.target.closest('tr')
     const gender = rows.querySelector('[name="addGender"]')
 
-    setMembers([
+    setOtherMembers([
       ...members,
       {
         gender: gender.value,
@@ -285,7 +285,6 @@ const GameDetail = ({ userObj, totalGames }) => {
         endMinute: 0,
       },
     ])
-    console.log(members)
     // document.querySelector
   }
 
@@ -339,7 +338,7 @@ const GameDetail = ({ userObj, totalGames }) => {
                 <td>
                   <Select
                     name="endHour"
-                    range={[firstHour + 1, lastHour + 1]}
+                    range={[firstHour, lastHour]}
                     step={1}
                     value={val.endHour}
                     idx={idx}

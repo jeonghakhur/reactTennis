@@ -10,12 +10,13 @@ import Schedule from '../routes/Schedule'
 import ScheduleDetail from '../routes/ScheduleDetail'
 import Game from '../routes/Game'
 import GameDetail from '../routes/GameDetail'
-
+import Test from '../routes/Test'
 const AppRouter = ({ isLoggedIn, userObj, totalGames }) => {
   return (
     <Router>
       <Navigation isLoggedIn={isLoggedIn} userObj={userObj} />
       <Switch>
+        <Route path="/test" component={Test} />
         <Route
           path="/games/:name"
           render={() => <GameDetail userObj={userObj} totalGames={totalGames} />}

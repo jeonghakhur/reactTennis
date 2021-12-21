@@ -436,3 +436,92 @@ input[type=submit] {
 //     }
 //   }
 // }
+body {
+  overflow: hidden;
+}
+
+.modal {
+  // display: flex;
+  // pointer-events: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 1050;
+
+  &-dialog {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    width: 100vw;
+    height: 100%;
+    min-height: 100%;
+    // transition: transfrom .15s ease-out;
+  }
+
+  &-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &-header {
+    height: 56px;
+  }
+
+  &-body {
+    position: relative;
+    overscroll-behavior: none;
+    padding: 56px 20px 2rem;
+    flex: 1 1 auto;
+    overflow-y: scroll;
+    word-wrap: break-word;
+    word-break: unset;
+  }
+
+  // .content {
+  //   height: 100%
+  // }
+
+  .box {
+    margin: 1rem 0;
+    width: 100%;
+    height: 300px;
+    background-color: yellow;
+  }
+
+  .btn-wrap {
+    padding-top: 48px;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+
+    button {
+      width: 100%;
+      height: 48px;
+      background-color: blue;
+      color: white;
+    }
+  }
+
+  .top {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+}

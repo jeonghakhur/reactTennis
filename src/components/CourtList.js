@@ -1,11 +1,33 @@
 import React , {useState, useEffect, useMemo} from 'react'
+import _ from 'lodash'
 
 const CourtList = (props) => {
   
   const { gameId, members, totalGames } = props
-  const [date, setDate] = useState(false)
   const [currentGames, setCurrentGames] = useState(false)
 
+
+  const getPlayer = (date, startTime, endTime) => {
+    let newMembers = members.filter(member => {
+      // console.log(member)
+      const memberStartTime = new Date(date[0], date[1] - 1, date[2], member.startHour, member.startMinute).getTime()
+      const memberEndTime = new Date(date[0], date[1] - 1, date[2], member.endHour, member.endMinute).getTime()
+      member.players.sort((a, b) => a.pair - b.pair)
+      if (startTime >= memberStartTime && endTime <= memberEndTime) return member
+    })
+
+    
+
+    // newMembers.sort(() => Math.random() - Math.random())
+
+    const player1 = newMembers[0]
+    const player2 = _.minBy(_.sortBy(player1.players, 'count'), 'pair')
+    const player3 = _.minBy(_.filter(player1.players, player => player.name !== player2.name), 'notPair')
+    const player4 = _.filter(player1)
+    console.log(newMembers)
+
+    return newMembers.map(member => member.name)
+  }
 
   const init = (data) => {
     const newArray = []
@@ -34,20 +56,22 @@ const CourtList = (props) => {
 
       for (let i = 0; i < gameCount; i += 1) {
         const id = `${number}-${i}`
+        const gameStartTime = startTime + moveTimeStamp * i
+        const gameEndTime = startTime + moveTimeStamp * i + moveTimeStamp
         newArray.push({
           id,
           number,
-          startTime: startTime + moveTimeStamp * i,
-          endTime: startTime + moveTimeStamp * i + moveTimeStamp,
+          startTime: gameStartTime,
+          endTime: gameEndTime,
           timeOrder: i,
-          player: [],
+          player: getPlayer(dateArr, gameStartTime, gameEndTime),
           score: [],
         })
       }
     })
 
     newArray.sort((a, b) => a.startTime - b.startTime)
-    setDate(dateArr)
+    
     setCurrentGames(newArray)
   }
 
@@ -60,89 +84,22 @@ const CourtList = (props) => {
     return hour + ' : ' + minute
   }
 
+
   // 전체 게임만 추려본다.
   // 전체 게임 중 오늘 참석자만 있는 게임을 추려 본다.
-  const m = useMemo(() => {
-    if (!members) return
-    const allGames = []
-    totalGames.forEach(val => {
-      if (!val.games) return
-      val.games.forEach(game => {
-        if (game.player.indexOf('') === -1) {
-          allGames.push(game.player)
-        }
-      })
-    })
-
-    
-    const myGames = allGames.filter(member => member.indexOf('허정학') !== -1)
-
-    // console.log('memo',myGames, members)
-    return 'a'
-  }, [members])
 
  const test = () => {
-  //  console.log('test', members)
+  console.log(members)
  }
 
   useEffect(() => {
     // console.clear()
     console.log('effect')
-    if (!totalGames) return
+    if (!members) return
+    
     init(totalGames.find(game => game.id === gameId))
-
-
-
-
-
-    // console.log(games)
-    // const timeMembers = []
-
-
-    // const addPlayer = (startTime, endTime) => {
-    //   const newMembers = members.filter(member => {
-    //     const memberStartTime = new Date(date[0], date[1] - 1, date[2], member.startHour, member.startMinute).getTime()
-    //     const memberEndTime = new Date(date[0], date[1] - 1, date[2], member.endHour, member.endMinute).getTime()
-    //     if (startTime >= memberStartTime && endTime <= memberEndTime) return member
-    //   })
-
-    //   newMembers.sort(() => Math.random() - Math.random())
-
-
-    //   // 참석 가능한 시간데 인원중 랜덤으로 
-    //   // 나와 페어가 가장 적었던
-    //   // 나와 상대 페어가 가장 적었던
-    //   // 상대 페어와 페어가 가장 적었던.
-
-
-
-    //   // timeMembers.forEach(val => {
-    //   //   if (val.id === startTime) {
-    //   //     for (let i = 0; i < 4; i += 1) {
-    //   //       val.player.push(newMembers)
-    //   //     }
-    //   //   }
-    //   // })
-    //   const arr = [1, 2, 4]
-      
-    //   console.log(newMembers)
-    // }
-    // if (games) {
-    //   games.forEach(game => {
-    //     const index = timeMembers.findIndex(val => val.id === game.startTime)
-    //     if (index !== -1) {
-    //       timeMembers[index].player = addPlayer(game.startTime, game.endTime)
-    //     } else {
-    //       timeMembers.push({
-    //         id: game.startTime,
-    //         player: addPlayer(game.startTime, game.endTime)
-    //       })
-    //     }
-    //   })
-    // }
-
     // setPairs(true)
-  }, [gameId, totalGames])
+  }, [members])
   
 
   // const timeMembers = []
@@ -236,7 +193,7 @@ const CourtList = (props) => {
               <td>{idx + 1}</td>
               <td>{game.number}</td>
               <td>{getHourMinute(game.startTime)}</td>
-              <td></td>
+              <td>{game.player[0]}{game.player[1]}</td>
               <td></td>
               <td></td>
             </tr>
