@@ -1,40 +1,47 @@
 import React , {useState, useEffect, useMemo} from 'react'
-import _ from 'lodash'
+import _, { result } from 'lodash'
 
 const CourtList = (props) => {
   
-  const { gameId, members, totalGames } = props
+  const { gameId, members, totalGames, onGameData } = props
   const [currentGames, setCurrentGames] = useState(false)
 
 
-  const getPlayer = (date, startTime, endTime) => {
+  const getPlayer = (date, startTime, endTime, order) => {
+
     let newMembers = members.filter(member => {
-      // console.log(member)
       const memberStartTime = new Date(date[0], date[1] - 1, date[2], member.startHour, member.startMinute).getTime()
       const memberEndTime = new Date(date[0], date[1] - 1, date[2], member.endHour, member.endMinute).getTime()
-      member.players.sort((a, b) => a.pair - b.pair)
-      if (startTime >= memberStartTime && endTime <= memberEndTime) return member
+      if (startTime >= memberStartTime && endTime <= memberEndTime && member.count.indexOf(order - 1) === -1) return member
     })
 
+    newMembers.sort(() => Math.random() - Math.random())
+    newMembers.sort((a, b) => a.count.length - b.count.length)
     
-
-    // newMembers.sort(() => Math.random() - Math.random())
+    console.log('sort', newMembers)
+    const resultMember = []
 
     const player1 = newMembers[0]
-    const player2 = _.minBy(_.sortBy(player1.players, 'count'), 'pair')
-    const player3 = _.minBy(_.filter(player1.players, player => player.name !== player2.name), 'notPair')
-    const player4 = _.filter(player1)
-    console.log(newMembers)
+    player1.count.push(order)
+    // const player2 = _.minBy(_.sortBy(player1.players, 'count'), 'pair')
+    // const player3 = _.minBy(_.filter(player1.players, player => player.name !== player2.name), 'notPair')
+    // const player4 = _.filter(player1)
+    // console.clear()
+    // console.log(player1)
+    // console.log(player2)
+    // console.log(newMembers)
+    resultMember.push(player1.name)
 
-    return newMembers.map(member => member.name)
+    return resultMember
   }
 
   const init = (data) => {
     const newArray = []
     const {date, court, moveTime} = data
     const dateArr = date.split('-')
+    members.forEach(member => member.count = [])
 
-    court.forEach(val => {
+    court.forEach((val, i) => {
       const moveTimeStamp = moveTime * 60 * 1000
       const {number, startHour, startMinute, endHour, endMinute} = val
       const startTime = new Date(
@@ -54,24 +61,24 @@ const CourtList = (props) => {
 
       const gameCount = (endTime - startTime) / moveTimeStamp
 
-      for (let i = 0; i < gameCount; i += 1) {
-        const id = `${number}-${i}`
-        const gameStartTime = startTime + moveTimeStamp * i
-        const gameEndTime = startTime + moveTimeStamp * i + moveTimeStamp
+      for (let j = 0; j < gameCount; j += 1) {
+        const order = (j * 2) - ( - 1 - i)
+        const id = `${number}-${j}`
+        const gameStartTime = startTime + moveTimeStamp * j
+        const gameEndTime = startTime + moveTimeStamp * j+ moveTimeStamp
         newArray.push({
           id,
           number,
           startTime: gameStartTime,
           endTime: gameEndTime,
-          timeOrder: i,
-          player: getPlayer(dateArr, gameStartTime, gameEndTime),
+          timeOrder: j,
+          player: getPlayer(dateArr, gameStartTime, gameEndTime, order),
           score: [],
         })
       }
     })
 
     newArray.sort((a, b) => a.startTime - b.startTime)
-    
     setCurrentGames(newArray)
   }
 
@@ -89,15 +96,20 @@ const CourtList = (props) => {
   // 전체 게임 중 오늘 참석자만 있는 게임을 추려 본다.
 
  const test = () => {
-  console.log(members)
+  const newArray = []
+  members.forEach(member => {
+    const {name, count} = member
+    newArray.push({name, count})
+  })
+  return newArray
+  // onGameData(newArray)
  }
 
   useEffect(() => {
-    // console.clear()
     console.log('effect')
     if (!members) return
-    
     init(totalGames.find(game => game.id === gameId))
+    onGameData(test())
     // setPairs(true)
   }, [members])
   
@@ -166,7 +178,10 @@ const CourtList = (props) => {
 
 
   return (
-    <div className="scroll-wrap" onClick={test}>
+    <div className="scroll-wrap">
+      <button type="button" onClick={test}>
+          멤버 세팅
+      </button>
       <table className="table">
         <colgroup>
           <col />
@@ -194,7 +209,7 @@ const CourtList = (props) => {
               <td>{game.number}</td>
               <td>{getHourMinute(game.startTime)}</td>
               <td>{game.player[0]}{game.player[1]}</td>
-              <td></td>
+              <td>{game.player[2]}{game.player[3]}</td>
               <td></td>
             </tr>
           )})}

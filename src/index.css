@@ -304,10 +304,6 @@ input[type=submit] {
   text-align: left !important;
 }
 
-body {
-  overflow: hidden;
-}
-
 .modal {
   overflow-x: hidden;
   overflow-y: auto;

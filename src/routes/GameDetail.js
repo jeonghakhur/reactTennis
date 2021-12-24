@@ -17,6 +17,7 @@ const GameDetail = ({ userObj, totalGames }) => {
   const [firstHour, setFirstHour] = useState(false)
   const [lastHour, setLastHour] = useState(false)
   const [members, setMembers] = useState(false)
+  const [gameCount, setGameCount] = []
   // const [saveGames, setSaveGames] = useState(false)
   // eslint-disable-next-line no-unused-vars
   const [userInput, setUserInput] = useState(false)
@@ -77,10 +78,6 @@ const GameDetail = ({ userObj, totalGames }) => {
 
     getMember(court)
     // setSaveGames(newArray)
-  }
-
-  const optionMember = () => {
-    console.log('member setting')
   }
 
   const setOtherMembers = (members) => {
@@ -292,9 +289,16 @@ const GameDetail = ({ userObj, totalGames }) => {
     setUserInput(e.target.value)
   }
 
-  const memberCount = useMemo(() => {
-    return members.length
-  }, [members])
+
+  const handleGameCount = (data) => {
+    data.forEach(val => {
+      const cell = document.querySelector(`#gameCount-${val.name}`)
+      cell.textContent = val.count.sort((a, b) => a - b)
+    })
+    // setGameCount(data)
+    // console.log(data)
+    // setGameCount(data)
+  }
 
   return (
     <div className="game-detail">
@@ -352,7 +356,7 @@ const GameDetail = ({ userObj, totalGames }) => {
                     idx={idx}
                   />
                 </td>
-                <td className="game-count"></td>
+                <td className="game-count" id={`gameCount-${val.name}`}></td>
                 <td>
                   <button
                     type="button"
@@ -391,13 +395,7 @@ const GameDetail = ({ userObj, totalGames }) => {
           </tr>
         </tbody>
       </table>
-      <div>
-        <button type="button" onClick={optionMember}>
-          멤버 세팅
-        </button>
-        참석 멤머 {memberCount}
-      </div>
-      <CourtList gameId={gameId} members={members} totalGames={totalGames} />
+      <CourtList gameId={gameId} members={members} totalGames={totalGames} onGameData={handleGameCount} />
     </div>
   )
 }
